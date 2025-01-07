@@ -7,7 +7,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -81,11 +84,9 @@ public class Engine extends JFrame {
 		setSettings();
 		addActionEvent(this);
 	}
+	
 	/**
-	 * Método setSettings. Este método establece la configuración principal de todos los componentes visuales 
-	 * de la ventana. Concretamente, se encarga de, entre otras cosas: poner los layouts de los paneles y 
-	 * añadirlos, añadir los botones y llamar al método setFeaturesButton(), el display, establecer
-	 * las características de los botones, tamaño de la ventana, localización, etc.
+	 * Método setSettings(). Establece la configuración principal de todos los componentes visuales de la ventana.
 	 */
 	private void setSettings() {
 	    // Configurar el JTextField
@@ -144,52 +145,98 @@ public class Engine extends JFrame {
 	    this.frame.setLayout(new BorderLayout());
 	    this.frame.add(this.contentPanel, BorderLayout.CENTER);
 	    
-		this.frame.setLocation(200, 200);
+		this.frame.setLocation(750, 350);
 		this.frame.setSize(400, 400);
 		this.frame.setVisible(true);
 		this.frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-
 	
 	/**
-	 * Contiene una condición que permite distinguir si el tipo de botón pasa como parámetro es de tipo 
-	 * REGULAR u OPERATOR. En función de esto, pintará el botón de un color u otro. Puedes añadirle (y es algo 
-	 * que se tendrá en cuenta) más características tales como cambio del tipo de letra, bordes, etc.
-	 * 		• _button identifica el botón sobre el que se van a cambiar las características.
-	 * 		• _type identifica de qué tipo es el botón sobre el que se van a cambiar las características.
-	 * @param _button
-	 * @param _type
+	 * Método setFeaturesButton(). Permite distinguir si el tipo de botón que pasa como parámetro es de tipo REGULAR u OPERATOR. En función de esto, 
+	 * personaliza el botón de una forma u otra.
+	 * @param _button identifica el botón sobre el que se van a cambiar las características.
+	 * @param _type identifica de qué tipo es el botón.
 	 */
 	public void setFeaturesButton(JButton _button, ButtonType _type) {
+	    _button.setFocusPainted(false); // Elimina el borde azul al seleccionarlo
+	    _button.setFont(new Font("Arial", Font.BOLD, 18));
+	    _button.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+	    _button.setPreferredSize(new Dimension(75, 75));
 
+	    // Comprobamos si es REGULAR u OPERATOR
+	    if (_type == ButtonType.REGULAR) {
+	        _button.setBackground(new Color(251, 248, 204));
+	        _button.setForeground(Color.BLACK);
+	    } else if (_type == ButtonType.OPERATOR) {
+	        _button.setBackground(new Color(204, 229, 255));
+	        _button.setForeground(Color.BLACK);
+	    }
+
+	    // Hover   
+	    _button.addMouseListener(new MouseAdapter() {
+	    	
+	    	// Al pasar el cursor sobre un botón, el color se oscurece
+	        @Override
+	        public void mouseEntered(MouseEvent evt) {
+	            _button.setBackground(_type == ButtonType.REGULAR 
+	                ? new Color(240, 238, 180)
+	                : new Color(180, 215, 240));
+	        }
+
+	        // Cuando el cursor ya no está sobre el botón, vuelve a su color original
+	        @Override
+	        public void mouseExited(MouseEvent evt) {
+	            _button.setBackground(_type == ButtonType.REGULAR 
+	                ? new Color(251, 248, 204)
+	                : new Color(204, 229, 255));
+	        }
+	    });
 	}
 	
 	/**
-	 * Este método registra los ActionListener para todos los botones de la aplicación. Es decir, para cada botón, 
-	 * añade un ActionListener que recibe como parámetro el objeto this para poder identificar el objeto (botón) 
-	 * que se pulsa.
+	 * Método addActionEvent(). Registra los ActionListener para todos los botones de la aplicación. Es decir, para cada botón, 
+	 * añade un ActionListener que recibe como parámetro el objeto this para poder identificar el botón que se pulsa.
 	 */
 	public void addActionEvent(Engine _eng) {
-
+		
 	}
 
 
 	
 	/**
-	 * Comprueba qué operación se debe realizar. En otras palabras: mira el estado actual del atributo 
+	 * Método operation(). Comprueba qué operación se debe realizar. En otras palabras: mira el estado actual del atributo 
 	 * this.operation y, en función de ese valor, lleva a cabo una operación u otra (con los atributos this.num1
 	 * y this.num2, que representan los dos únicos operando que maneja nuestra calculadora), modificando el 
 	 * atributo this.result y actualizando el texto en el display.
 	 */
 	public void operation() {
-
+	    switch (this.operation) {
+	        case '+':
+	            this.result = this.num1 + this.num2;
+	            break;
+	        case '-':
+	            this.result = this.num1 - this.num2;
+	            break;
+	        case 'x':
+	            this.result = this.num1 * this.num2;
+	            break;
+	        case '/':
+	            if (this.num2 != 0) {
+	                this.result = this.num1 / this.num2;
+	            } else {
+	                this.display.setText("Error");
+	                return;
+	            }
+	            break;
+	        default:
+	            this.result = 0;
+	    }
+	    this.display.setText(String.valueOf(this.result));
 	}
-
-
 	
 	/**
-	 * Este método se encarga de obtener la información que haya en el display (números introducidos y operación
-	 * que se debe realizar) y llamar al método operation() para ejecutar dicha operación. Hay muchas formas de 
+	 * Método actionPerformed(). Este método se encarga de obtener la información que haya en el display (números introducidos
+	 * y operación que se debe realizar) y llamar al método operation() para ejecutar dicha operación. Hay muchas formas de 
 	 * llevar a cabo esta lógica... Piensa cuál podría ser la mejor manera de hacerlo. Por ejemplo, una manera 
 	 * podría ser identificar el botón que se ha pulsado y añadir su texto al display y, cuando se pulse sobre el 
 	 * botón =, entonces hacemos que se ejecute la operación que se haya indicado con los botones de operación 
@@ -201,7 +248,6 @@ public class Engine extends JFrame {
 	public void actionPerformed(ActionEvent e) {
 
 	}
-
 	
 	/*
 	 * Nota: como he dicho, hay muchas maneras de implementar la lógica del método actionPerformed(). Te aconsejo 
