@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -16,7 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class Engine extends JFrame {
+public class Engine extends JFrame implements ActionListener {
 	/**
 	 * ATRIBUTOS
 	 */
@@ -83,6 +84,8 @@ public class Engine extends JFrame {
 		// Pensar si instanciar el enum, int y char
 		setSettings();
 		addActionEvent(this);
+		
+		// ME GUSTARIA AÑADIR BOTONES DE PARENTESIS.
 	}
 	
 	/**
@@ -198,16 +201,27 @@ public class Engine extends JFrame {
 	 * añade un ActionListener que recibe como parámetro el objeto this para poder identificar el botón que se pulsa.
 	 */
 	public void addActionEvent(Engine _eng) {
-		
+	    this.n0.addActionListener(this);
+	    this.n1.addActionListener(this);
+	    this.n2.addActionListener(this);
+	    this.n3.addActionListener(this);
+	    this.n4.addActionListener(this);
+	    this.n5.addActionListener(this);
+	    this.n6.addActionListener(this);
+	    this.n7.addActionListener(this);
+	    this.n8.addActionListener(this);
+	    this.n9.addActionListener(this);
+	    this.add.addActionListener(this);
+	    this.subtract.addActionListener(this);
+	    this.multiply.addActionListener(this);
+	    this.divide.addActionListener(this);
+	    this.equal.addActionListener(this);
+	    this.reset.addActionListener(this);
 	}
-
-
 	
 	/**
-	 * Método operation(). Comprueba qué operación se debe realizar. En otras palabras: mira el estado actual del atributo 
-	 * this.operation y, en función de ese valor, lleva a cabo una operación u otra (con los atributos this.num1
-	 * y this.num2, que representan los dos únicos operando que maneja nuestra calculadora), modificando el 
-	 * atributo this.result y actualizando el texto en el display.
+	 * Método operation(). Comprueba qué operación se debe realizar. Mira el estado actual del atributo this.operation y, en función de ese valor, 
+	 * lleva a cabo una operación u otra, modificando el atributo this.result y actualizando el texto en el display.
 	 */
 	public void operation() {
 	    switch (this.operation) {
@@ -224,7 +238,7 @@ public class Engine extends JFrame {
 	            if (this.num2 != 0) {
 	                this.result = this.num1 / this.num2;
 	            } else {
-	                this.display.setText("Error");
+	                this.display.setText("Syntax ERROR: Division by zero");
 	                return;
 	            }
 	            break;
@@ -235,9 +249,8 @@ public class Engine extends JFrame {
 	}
 	
 	/**
-	 * Método actionPerformed(). Este método se encarga de obtener la información que haya en el display (números introducidos
-	 * y operación que se debe realizar) y llamar al método operation() para ejecutar dicha operación. Hay muchas formas de 
-	 * llevar a cabo esta lógica... Piensa cuál podría ser la mejor manera de hacerlo. Por ejemplo, una manera 
+	 * Método actionPerformed(). Se encarga de obtener la información que haya en el display (números introducidos y operación que se debe realizar) 
+	 * y llamar al método operation() para ejecutar dicha operación. Por ejemplo, una manera 
 	 * podría ser identificar el botón que se ha pulsado y añadir su texto al display y, cuando se pulse sobre el 
 	 * botón =, entonces hacemos que se ejecute la operación que se haya indicado con los botones de operación 
 	 * (sumar, restar, multiplicar o dividir). En cualquier caso e independientemente de la decisión que se
@@ -248,15 +261,6 @@ public class Engine extends JFrame {
 	public void actionPerformed(ActionEvent e) {
 
 	}
-	
-	/*
-	 * Nota: como he dicho, hay muchas maneras de implementar la lógica del método actionPerformed(). Te aconsejo 
-	 * que busques más información sobre las expresiones regulares (para saber más sobre expresiones regulares, 
-	 * ver [4, 1, 3, 2]), ya que estas pueden ser realmente útiles para coger las partes del texto del display que 
-	 * te interesen en cada momento, así como hacer un split() de dicho texto e identificar los distintos 
-	 * elementos (que en nuestro caso, al ser una calculadora que únicamente trabaja con dos operandos, los tres 
-	 * elementos presentes son: operando 1, símbolo de la operación y operando 2).
-	 */
 	
 	
 }
