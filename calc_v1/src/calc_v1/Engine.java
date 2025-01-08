@@ -102,7 +102,7 @@ public class Engine extends JFrame implements ActionListener {
 	    // Configurar el panel del display
 	    this.displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 	    this.displayPanel.setPreferredSize(new Dimension(400, 80));
-	    this.displayPanel.add(display);
+	    this.displayPanel.add(this.display);
 
 	    // Configurar el panel de botones
 	    this.buttonPanel.setLayout(new GridLayout(4, 4, 5, 5));
@@ -259,7 +259,38 @@ public class Engine extends JFrame implements ActionListener {
 	 * @param e
 	 */
 	public void actionPerformed(ActionEvent e) {
-
+		
+		// A FALTA DE QUE FUNCIONEN LAS OPERACIONES CON NÚMEROS NEGATIVOS
+		
+	    String op = e.getActionCommand();
+	    switch (op) {
+	        case "C":
+	            this.display.setText("");
+	            this.num1 = 0;
+	            this.num2 = 0;
+	            this.operation = '\0';
+	        break;
+	        case "=":
+	            String[] parts = display.getText().split("[+\\-x/]");
+	             
+	            // Condición para que no se ejecute ninguna acción si se han seleccionado más de dos números
+	            if (parts.length == 2) {
+	                this.num1 = Integer.parseInt(parts[0].trim());
+	                this.num2 = Integer.parseInt(parts[1].trim());
+	                operation();
+	            }
+	        break;
+	        case "+":
+	        case "-":
+	        case "x":
+	        case "/":
+	            this.operation = op.charAt(0);
+	            this.display.setText(this.display.getText() + op);
+	        break;
+	        default:
+	            this.display.setText(this.display.getText() + op);
+	        break;
+	    }
 	}
 	
 	
