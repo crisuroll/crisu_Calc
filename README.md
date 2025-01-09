@@ -21,7 +21,7 @@ Welcome to a basic calculator made with Java, using the Swing library!
 
 ### 1. Basic operations
 - Basic operations! Add, subtract, multiply, divide.
-![basic operations](README src/Basic ops.gif)
+![basic operations](https://github.com/crisuroll/crisu_Calc/blob/main/README%20src/Basic%20ops.gif))
 - Reset button to delete everything written.
 
 - Other operations such as pow, square root and percentages.
