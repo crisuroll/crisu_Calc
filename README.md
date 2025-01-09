@@ -21,7 +21,7 @@ Welcome to a basic calculator made with Java, using the Swing library!
 
 ### 1. Basic operations
 - Basic operations! Add, subtract, multiply, divide.
-
+![basic operations](README src/Basic ops.gif)
 - Reset button to delete everything written.
 
 - Other operations such as pow, square root and percentages.
@@ -40,13 +40,6 @@ I'll explain what is the star function in case no one trust it! I'll hide it in 
   The pink button with a white start just redirects to my GitHub profile when clicked.
   
 </details>
-
-### 4. GitHub
-- A section to show my GitHub profile
-
-### 5. Contact
-- A form where you can contact me
-- **ON PROGRESS, API NOT WORKING**
 
 ## 🛠️ Technologies Used
 
