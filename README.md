@@ -21,7 +21,7 @@ Welcome to a basic calculator made with Java, using the Swing library!
 
 ### 1. Basic operations
 - Basic operations! Add, subtract, multiply, divide.
-![basic operations](https://github.com/crisuroll/crisu_Calc/blob/main/README%20src/Basic%20ops.gif))
+![basic operations](https://github.com/crisuroll/crisu_Calc/blob/main/README%20src/Basic%20ops.gif)
 	-> As you can see while doing the division, the calculator doesn't work with float numbers, only integers. Percentages will appear as an int number, deleting the decimals.
   
 - Reset button to delete everything written.
@@ -29,7 +29,7 @@ Welcome to a basic calculator made with Java, using the Swing library!
 
 - Other operations such as pow, square root and percentages.
 ![other operations](https://github.com/crisuroll/crisu_Calc/blob/main/README%20src/Pow%2C%20sqr%2C%20perc.gif)
-	
+
 
 ### 2. Negative numbers
 - The calculator can tell if the symbol `-` is the operator of subtract or the negative sign to make a negative number. The calculator can do operations with negative numbers.
