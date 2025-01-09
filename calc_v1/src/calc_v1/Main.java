@@ -4,7 +4,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-			Engine calculadora = new Engine("Calculadora");
+			Engine calculadora = new Engine();
 
 	}
 

@@ -53,8 +53,9 @@ public class Engine extends JFrame implements ActionListener {
 	private JButton perc;
 	private JButton equal;
 	private JButton reset;
+	private JButton extra;
 	// Tipos de boton
-	private enum ButtonType {REGULAR, OPERATOR};
+	private enum ButtonType {REGULAR, OPERATOR, EXTRA};
 	// Almacenar temporalmente ciertos valores
 	private int num1, num2, result;
 	private char operation;
@@ -62,9 +63,8 @@ public class Engine extends JFrame implements ActionListener {
 	/**
 	 * CONSTRUCTORA
 	 */
-	public Engine(String _msg) {
-		super(_msg);
-		this.frame = new JFrame();
+	public Engine() {
+		this.frame = new JFrame("crisu_Calc :3 owo");
 		this.contentPanel = new JPanel();
 		this.displayPanel = new JPanel();
 		this.buttonPanel = new JPanel();
@@ -88,9 +88,10 @@ public class Engine extends JFrame implements ActionListener {
 		this.sqr = new JButton("√");
 		this.perc = new JButton("%");
 		this.reset = new JButton("C");
+		this.extra = new JButton("☆");
 		// Pensar si instanciar el enum, int y char
 		setSettings();
-		addActionEvent(this);
+		addActionEvent();
 		
 		// ME GUSTARIA AÑADIR BOTONES DE PARENTESIS.
 	}
@@ -102,7 +103,7 @@ public class Engine extends JFrame implements ActionListener {
 	    // Configurar el JTextField
 	    this.display.setEditable(false);
 	    this.display.setHorizontalAlignment(JTextField.RIGHT);
-	    this.display.setFont(new Font("Arial", Font.BOLD, 24));
+	    this.display.setFont(new Font("Arial", Font.BOLD, 20));
 	    this.display.setPreferredSize(new Dimension(380, 60));
 	    this.display.setBackground(Color.WHITE);
 
@@ -133,6 +134,7 @@ public class Engine extends JFrame implements ActionListener {
 	    setFeaturesButton(this.n0, ButtonType.REGULAR);
 	    setFeaturesButton(this.equal, ButtonType.OPERATOR);
 	    setFeaturesButton(this.add, ButtonType.OPERATOR);
+	    setFeaturesButton(this.extra, ButtonType.EXTRA);
 
 	    // Añadir botones al panel de botones
 	    this.buttonPanel.add(this.pow);
@@ -151,10 +153,10 @@ public class Engine extends JFrame implements ActionListener {
 	    this.buttonPanel.add(this.n2);
 	    this.buttonPanel.add(this.n3);
 	    this.buttonPanel.add(this.divide);
-	    //this.buttonPanel.add(this.reset);
-	    this.buttonPanel.add(this.equal);
-	    this.buttonPanel.add(this.n0);
 	    this.buttonPanel.add(this.reset);
+	    this.buttonPanel.add(this.n0);
+	    this.buttonPanel.add(this.equal);
+	    this.buttonPanel.add(this.extra);
 
 	    // Configurar la ventana principal
 	    this.contentPanel.setLayout(new BorderLayout());
@@ -177,7 +179,6 @@ public class Engine extends JFrame implements ActionListener {
 	 */
 	public void setFeaturesButton(JButton _button, ButtonType _type) {
 	    _button.setFocusPainted(false); // Elimina el borde azul al seleccionarlo
-	    _button.setFont(new Font("Arial", Font.BOLD, 18));
 	    _button.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 	    _button.setPreferredSize(new Dimension(75, 75));
 
@@ -185,9 +186,14 @@ public class Engine extends JFrame implements ActionListener {
 	    if (_type == ButtonType.REGULAR) {
 	        _button.setBackground(new Color(251, 248, 204));
 	        _button.setForeground(Color.BLACK);
+	        _button.setFont(new Font("Arial", Font.BOLD, 18));
 	    } else if (_type == ButtonType.OPERATOR) {
 	        _button.setBackground(new Color(204, 229, 255));
 	        _button.setForeground(Color.BLACK);
+	        _button.setFont(new Font("Arial", Font.BOLD, 18));
+	    } else if (_type == ButtonType.EXTRA) {
+	    	_button.setBackground(new Color(255, 204, 213));
+	    	_button.setForeground(Color.BLACK);
 	    }
 
 	    // Hover   
@@ -196,17 +202,25 @@ public class Engine extends JFrame implements ActionListener {
 	    	// Al pasar el cursor sobre un botón, el color se oscurece
 	        @Override
 	        public void mouseEntered(MouseEvent evt) {
-	            _button.setBackground(_type == ButtonType.REGULAR 
-	                ? new Color(240, 238, 180)
-	                : new Color(180, 215, 240));
+	        	if (_type == ButtonType.REGULAR) {
+	        		_button.setBackground(new Color(240, 238, 180));
+	        	} else if (_type == ButtonType.OPERATOR) {
+	        		_button.setBackground(new Color(180, 215, 240));
+	        	} else if (_type == ButtonType.EXTRA) {
+	        		_button.setBackground(new Color(255, 179, 193));
+	        	}
 	        }
 
 	        // Cuando el cursor ya no está sobre el botón, vuelve a su color original
 	        @Override
 	        public void mouseExited(MouseEvent evt) {
-	            _button.setBackground(_type == ButtonType.REGULAR 
-	                ? new Color(251, 248, 204)
-	                : new Color(204, 229, 255));
+	        	if (_type == ButtonType.REGULAR) {
+	        		_button.setBackground(new Color(251, 248, 204));
+	        	} else if (_type == ButtonType.OPERATOR) {
+	        		_button.setBackground(new Color(204, 229, 255));
+	        	} else if (_type == ButtonType.EXTRA) {
+	        		_button.setBackground(new Color(255, 204, 213));
+	        	}
 	        }
 	    });
 	}
@@ -215,7 +229,7 @@ public class Engine extends JFrame implements ActionListener {
 	 * Método addActionEvent(). Registra los ActionListener para todos los botones de la aplicación. Es decir, para cada botón, 
 	 * añade un ActionListener que recibe como parámetro el objeto this para poder identificar el botón que se pulsa.
 	 */
-	public void addActionEvent(Engine _eng) {
+	public void addActionEvent() {
 	    this.n0.addActionListener(this);
 	    this.n1.addActionListener(this);
 	    this.n2.addActionListener(this);
@@ -230,8 +244,12 @@ public class Engine extends JFrame implements ActionListener {
 	    this.subtract.addActionListener(this);
 	    this.multiply.addActionListener(this);
 	    this.divide.addActionListener(this);
+	    this.pow.addActionListener(this);
+	    this.sqr.addActionListener(this);
+	    this.perc.addActionListener(this);
 	    this.equal.addActionListener(this);
 	    this.reset.addActionListener(this);
+	    this.extra.addActionListener(this);
 	}
 	
 	/**
@@ -257,6 +275,18 @@ public class Engine extends JFrame implements ActionListener {
 	                return;
 	            }
 	            break;
+	        case '^':
+	        	this.result = num1;
+	        	for (int i = 1; i < num2; i++) {
+	        		this.result = this.result * num1;
+	        	}
+	        	break;
+	        case '√':
+	        	this.result = (int) Math.sqrt(num1);
+	        	break;
+	        case '%':
+	        	this.result = (num1 * num2) / 100;
+	        	break;
 	        default:
 	            this.result = 0;
 	    }
@@ -291,14 +321,18 @@ public class Engine extends JFrame implements ActionListener {
 	            // Con esto conseguimos dividir el texto del display de la calculadora eliminando
 	            // los espacios en blanco entre operadores, y si no hay un espacio en blanco, en el caso de "-"
 	            // el número mantiene el signo y ya no sería operador, sino indicador de que es negativo.
-	            String[] parts = displayText.split("\\s(?=[+x/-])|(?<=[+x/-])\\s");
+	            String[] parts = displayText.split("\\s(?=[+x/-^√%])|(?<=[+x/-^√%])\\s");
 	            
 	            if (parts.length == 3) {
 	                this.num1 = Integer.parseInt(parts[0].trim());
 	                this.operation = parts[1].trim().charAt(0);
 	                this.num2 = Integer.parseInt(parts[2].trim());
 	                operation();
-	            } else {
+	            } else if (parts.length == 2) {
+	            	this.num1 = Integer.parseInt(parts[0].trim());
+	            	this.operation = parts[1].trim().charAt(0);
+	            	operation();
+	    		} else {
 	                this.display.setText("Syntax ERROR");
 	            }
 	            break;
@@ -315,6 +349,9 @@ public class Engine extends JFrame implements ActionListener {
 	        case "+":
 	        case "x":
 	        case "/":
+	        case "^":
+	        case "√":
+	        case "%":
 	            if (!this.display.getText().endsWith(" ")) {
 	                this.display.setText(this.display.getText() + " " + op + " ");
 	            }
