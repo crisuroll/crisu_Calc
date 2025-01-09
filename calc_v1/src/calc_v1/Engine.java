@@ -2,7 +2,7 @@ package calc_v1;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -11,18 +11,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.plaf.basic.BasicButtonUI;
 
 public class Engine extends JFrame implements ActionListener {
 	/**
 	 * ATRIBUTOS
 	 */
-	
 	// Marco de la ventana
 	private JFrame frame;
 	// Panel general que ocupa toda la ventana
@@ -34,26 +36,8 @@ public class Engine extends JFrame implements ActionListener {
 	// Display
 	private JTextField display;
 	// Botones
-	private JButton n0;
-	private JButton n1;
-	private JButton n2;
-	private JButton n3;
-	private JButton n4;
-	private JButton n5;
-	private JButton n6;
-	private JButton n7;
-	private JButton n8;
-	private JButton n9;
-	private JButton add;
-	private JButton subtract;
-	private JButton multiply;
-	private JButton divide;
-	private JButton pow;
-	private JButton sqr;
-	private JButton perc;
-	private JButton equal;
-	private JButton reset;
-	private JButton extra;
+	private JButton n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, add, subtract, multiply, divide, pow, sqr, perc,
+	equal, reset, extra;
 	// Tipos de boton
 	private enum ButtonType {REGULAR, OPERATOR, EXTRA};
 	// Almacenar temporalmente ciertos valores
@@ -61,7 +45,8 @@ public class Engine extends JFrame implements ActionListener {
 	private char operation;
 	
 	/**
-	 * CONSTRUCTORA
+	 * CONSTRUCTORA Engine(). Inicializamos todos los atributos y llamamos a los metodos setSettings() y 
+	 * setFeaturesButton() para personalizar la ventana y los botones.
 	 */
 	public Engine() {
 		this.frame = new JFrame("crisu_Calc :3 owo");
@@ -88,8 +73,7 @@ public class Engine extends JFrame implements ActionListener {
 		this.sqr = new JButton("√");
 		this.perc = new JButton("%");
 		this.reset = new JButton("C");
-		this.extra = new JButton("☆");
-		// Pensar si instanciar el enum, int y char
+		this.extra = new JButton("★");
 		setSettings();
 		addActionEvent();
 		
@@ -97,7 +81,7 @@ public class Engine extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Método setSettings(). Establece la configuración principal de todos los componentes visuales de la ventana.
+	 * Metodo setSettings(). Establece la configuracion principal de todos los componentes visuales de la ventana.
 	 */
 	private void setSettings() {
 	    // Configurar el JTextField
@@ -113,28 +97,27 @@ public class Engine extends JFrame implements ActionListener {
 	    this.displayPanel.add(this.display);
 
 	    // Configurar el panel de botones
-	    // this.buttonPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 	    this.buttonPanel.setLayout(new GridLayout(5, 4, 5, 5));
+	    setFeaturesButton(this.extra, ButtonType.EXTRA);
+	    setFeaturesButton(this.add, ButtonType.OPERATOR);
+	    setFeaturesButton(this.subtract, ButtonType.OPERATOR);
+	    setFeaturesButton(this.multiply, ButtonType.OPERATOR);
+	    setFeaturesButton(this.divide, ButtonType.OPERATOR);
+	    setFeaturesButton(this.reset, ButtonType.OPERATOR);
+	    setFeaturesButton(this.equal, ButtonType.OPERATOR);
 	    setFeaturesButton(this.pow, ButtonType.OPERATOR);
 	    setFeaturesButton(this.sqr, ButtonType.OPERATOR);
 	    setFeaturesButton(this.perc, ButtonType.OPERATOR);
-	    setFeaturesButton(this.n7, ButtonType.REGULAR);
-	    setFeaturesButton(this.n8, ButtonType.REGULAR);
-	    setFeaturesButton(this.n9, ButtonType.REGULAR);
-	    setFeaturesButton(this.divide, ButtonType.OPERATOR);
-	    setFeaturesButton(this.n4, ButtonType.REGULAR);
-	    setFeaturesButton(this.n5, ButtonType.REGULAR);
-	    setFeaturesButton(this.n6, ButtonType.REGULAR);
-	    setFeaturesButton(this.multiply, ButtonType.OPERATOR);
+	    setFeaturesButton(this.n0, ButtonType.REGULAR);
 	    setFeaturesButton(this.n1, ButtonType.REGULAR);
 	    setFeaturesButton(this.n2, ButtonType.REGULAR);
 	    setFeaturesButton(this.n3, ButtonType.REGULAR);
-	    setFeaturesButton(this.subtract, ButtonType.OPERATOR);
-	    setFeaturesButton(this.reset, ButtonType.OPERATOR);
-	    setFeaturesButton(this.n0, ButtonType.REGULAR);
-	    setFeaturesButton(this.equal, ButtonType.OPERATOR);
-	    setFeaturesButton(this.add, ButtonType.OPERATOR);
-	    setFeaturesButton(this.extra, ButtonType.EXTRA);
+	    setFeaturesButton(this.n4, ButtonType.REGULAR);
+	    setFeaturesButton(this.n5, ButtonType.REGULAR);
+	    setFeaturesButton(this.n6, ButtonType.REGULAR);
+	    setFeaturesButton(this.n7, ButtonType.REGULAR);
+	    setFeaturesButton(this.n8, ButtonType.REGULAR);
+	    setFeaturesButton(this.n9, ButtonType.REGULAR);
 
 	    // Añadir botones al panel de botones
 	    this.buttonPanel.add(this.pow);
@@ -164,42 +147,45 @@ public class Engine extends JFrame implements ActionListener {
 	    this.contentPanel.add(this.buttonPanel, BorderLayout.CENTER);
 	    this.frame.setLayout(new BorderLayout());
 	    this.frame.add(this.contentPanel, BorderLayout.CENTER);
-	    
 		this.frame.setLocation(550, 250);
-		this.frame.setSize(400, 400);
+		this.frame.setSize(500, 400);
 		this.frame.setVisible(true);
 		this.frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	/**
-	 * Método setFeaturesButton(). Permite distinguir si el tipo de botón que pasa como parámetro es de tipo REGULAR u OPERATOR. En función de esto, 
-	 * personaliza el botón de una forma u otra.
-	 * @param _button identifica el botón sobre el que se van a cambiar las características.
-	 * @param _type identifica de qué tipo es el botón.
+	 * Metodo setFeaturesButton(). Permite distinguir si el tipo de boton que pasa como parametro es de tipo 
+	 * REGULAR, OPERATOR o EXTRA. En función de esto, personaliza el boton de una forma u otra.
+	 * @param _button identifica el boton sobre el que se van a cambiar las caracteristicas.
+	 * @param _type identifica de que tipo es el boton.
 	 */
 	public void setFeaturesButton(JButton _button, ButtonType _type) {
-	    _button.setFocusPainted(false); // Elimina el borde azul al seleccionarlo
-	    _button.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-	    _button.setPreferredSize(new Dimension(75, 75));
+		_button.setPreferredSize(new Dimension(75, 75));
+		// Con estas dos opciones nos aseguramos de que el highlight azul desaparezca al hacer click en el boton
+		_button.setUI(new BasicButtonUI());
+	    _button.setFocusPainted(false);
 
-	    // Comprobamos si es REGULAR u OPERATOR
+	    // Comprobamos si es REGULAR, OPERATOR o EXTRA
 	    if (_type == ButtonType.REGULAR) {
 	        _button.setBackground(new Color(251, 248, 204));
-	        _button.setForeground(Color.BLACK);
+	        _button.setForeground(Color.DARK_GRAY);
 	        _button.setFont(new Font("Arial", Font.BOLD, 18));
+	        _button.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 	    } else if (_type == ButtonType.OPERATOR) {
 	        _button.setBackground(new Color(204, 229, 255));
-	        _button.setForeground(Color.BLACK);
+	        _button.setForeground(Color.DARK_GRAY);
 	        _button.setFont(new Font("Arial", Font.BOLD, 18));
+	        _button.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 	    } else if (_type == ButtonType.EXTRA) {
 	    	_button.setBackground(new Color(255, 204, 213));
-	    	_button.setForeground(Color.BLACK);
+	    	_button.setForeground(Color.WHITE);
+	    	_button.setBorder(BorderFactory.createLineBorder(Color.PINK));
 	    }
 
 	    // Hover   
 	    _button.addMouseListener(new MouseAdapter() {
 	    	
-	    	// Al pasar el cursor sobre un botón, el color se oscurece
+	    	// Al pasar el cursor sobre un boton, el color se oscurece
 	        @Override
 	        public void mouseEntered(MouseEvent evt) {
 	        	if (_type == ButtonType.REGULAR) {
@@ -211,7 +197,7 @@ public class Engine extends JFrame implements ActionListener {
 	        	}
 	        }
 
-	        // Cuando el cursor ya no está sobre el botón, vuelve a su color original
+	        // Cuando el cursor ya no esta sobre el botón, vuelve a su color original
 	        @Override
 	        public void mouseExited(MouseEvent evt) {
 	        	if (_type == ButtonType.REGULAR) {
@@ -226,8 +212,9 @@ public class Engine extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Método addActionEvent(). Registra los ActionListener para todos los botones de la aplicación. Es decir, para cada botón, 
-	 * añade un ActionListener que recibe como parámetro el objeto this para poder identificar el botón que se pulsa.
+	 * Metodo addActionEvent(). Registra los ActionListener para todos los botones de la aplicación. Es decir, 
+	 * para cada boton, añade un ActionListener que recibe como parametro el objeto this para poder identificar 
+	 * el boton que se pulsa.
 	 */
 	public void addActionEvent() {
 	    this.n0.addActionListener(this);
@@ -253,8 +240,9 @@ public class Engine extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Método operation(). Comprueba qué operación se debe realizar. Mira el estado actual del atributo this.operation y, en función de ese valor, 
-	 * lleva a cabo una operación u otra, modificando el atributo this.result y actualizando el texto en el display.
+	 * Metodo operation(). Comprueba que operacion se debe realizar. Mira el estado actual del atributo 
+	 * this.operation y, en funcion de ese valor, lleva a cabo una operacion u otra, modificando el atributo 
+	 * this.result y actualizando el texto en el display.
 	 */
 	public void operation() {
 	    switch (this.operation) {
@@ -271,7 +259,7 @@ public class Engine extends JFrame implements ActionListener {
 	            if (this.num2 != 0) {
 	                this.result = this.num1 / this.num2;
 	            } else {
-	                this.display.setText("Syntax ERROR: Division by zero");
+	                this.display.setText("No hagas eso :(");
 	                return;
 	            }
 	            break;
@@ -294,18 +282,24 @@ public class Engine extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Método actionPerformed(). Se encarga de obtener la información que haya en el display (números introducidos y operación que se debe realizar) 
-	 * y llamar al método operation() para ejecutar dicha operación. Por ejemplo, una manera 
-	 * podría ser identificar el botón que se ha pulsado y añadir su texto al display y, cuando se pulse sobre el 
-	 * botón =, entonces hacemos que se ejecute la operación que se haya indicado con los botones de operación 
-	 * (sumar, restar, multiplicar o dividir). En cualquier caso e independientemente de la decisión que se
-	 * tome, lo primero que debemos hacer en este método es recoger el tipo de botón que se ha pulsado (para poder 
-	 * hacer la distinción) y el texto asociado a ese botón. Esto se puede hacer de la siguiente forma:
+	 * Metodo actionPerformed(). Se encarga de obtener la información que haya en el display (numeros introducidos 
+	 * y operacion que se debe realizar) y llamar al metodo operation() para ejecutar dicha operacion.
 	 * @param e
 	 */
 	public void actionPerformed(ActionEvent e) {
 	    String op = e.getActionCommand();
 	    switch (op) {
+	    	case "★":
+	    		try {
+                    // Verificar si el escritorio es soportado
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                        desktop.browse(new URI("https://github.com/crisuroll"));
+                    }
+                } catch (IOException | URISyntaxException ex) {
+                    ex.printStackTrace();
+                }
+	    		break;
 	        case "C":
 	            this.display.setText("");
 	            this.num1 = 0;
@@ -315,20 +309,20 @@ public class Engine extends JFrame implements ActionListener {
 	        case "=":
 	            String displayText = this.display.getText().trim();
 
-	            // Expresión regular: \\s(?=[+x/-]) busca un espacio en blanco antes del operador.
-	            // (?<=[+x/-])\\s busca un espacio en blanco después del operador.
+	            // Expresion regular: \\s(?=[+x/-]) busca un espacio en blanco antes del operador.
+	            // (?<=[+x/-])\\s busca un espacio en blanco despues del operador.
 	            // El operador | (OR) separa ambas expresiones regulares.
 	            // Con esto conseguimos dividir el texto del display de la calculadora eliminando
 	            // los espacios en blanco entre operadores, y si no hay un espacio en blanco, en el caso de "-"
-	            // el número mantiene el signo y ya no sería operador, sino indicador de que es negativo.
+	            // el numero mantiene el signo y ya no seria operador, sino indicador de que es negativo.
 	            String[] parts = displayText.split("\\s(?=[+x/-^√%])|(?<=[+x/-^√%])\\s");
 	            
-	            if (parts.length == 3) {
+	            if (parts.length == 3) { // Dos numeros y un operador
 	                this.num1 = Integer.parseInt(parts[0].trim());
 	                this.operation = parts[1].trim().charAt(0);
 	                this.num2 = Integer.parseInt(parts[2].trim());
 	                operation();
-	            } else if (parts.length == 2) {
+	            } else if (parts.length == 2) { // Un numero y un operador
 	            	this.num1 = Integer.parseInt(parts[0].trim());
 	            	this.operation = parts[1].trim().charAt(0);
 	            	operation();
@@ -337,8 +331,8 @@ public class Engine extends JFrame implements ActionListener {
 	            }
 	            break;
 	        case "-":
-	            // Si está vacío o termina con un espacio (es decir, antes hay un operador), 
-	        	// se interpreta como número negativo
+	            // Si esta vacio o termina con un espacio (es decir, antes hay un operador), 
+	        	// se interpreta como numero negativo
 	            if (this.display.getText().isEmpty() || this.display.getText().endsWith(" ")) {
 	                this.display.setText(this.display.getText() + "-");
 	            } else {
