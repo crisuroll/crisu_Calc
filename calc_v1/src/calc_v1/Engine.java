@@ -21,6 +21,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+/**
+ * Clase Engine. Encargada de crear toda la interfaz y funcionalidad de la calculadora.
+ * @author crisuroll
+ */
 public class Engine extends JFrame implements ActionListener {
 	/**
 	 * ATRIBUTOS
@@ -83,7 +87,7 @@ public class Engine extends JFrame implements ActionListener {
 	/**
 	 * Metodo setSettings(). Establece la configuracion principal de todos los componentes visuales de la ventana.
 	 */
-	private void setSettings() {
+	public void setSettings() {
 	    // Configurar el JTextField
 	    this.display.setEditable(false);
 	    this.display.setHorizontalAlignment(JTextField.RIGHT);
