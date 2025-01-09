@@ -2,6 +2,7 @@ package calc_v1;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -43,10 +44,13 @@ public class Engine extends JFrame implements ActionListener {
 	private JButton n7;
 	private JButton n8;
 	private JButton n9;
-	private JButton divide;
-	private JButton multiply;
-	private JButton subtract;
 	private JButton add;
+	private JButton subtract;
+	private JButton multiply;
+	private JButton divide;
+	private JButton pow;
+	private JButton sqr;
+	private JButton perc;
 	private JButton equal;
 	private JButton reset;
 	// Tipos de boton
@@ -75,11 +79,14 @@ public class Engine extends JFrame implements ActionListener {
 		this.n7 = new JButton("7");
 		this.n8 = new JButton("8");
 		this.n9 = new JButton("9");
-		this.divide = new JButton("/");
-		this.multiply = new JButton("x");
-		this.subtract = new JButton("-");
 		this.add = new JButton("+");
+		this.subtract = new JButton("-");
+		this.multiply = new JButton("x");
+		this.divide = new JButton("/");
 		this.equal = new JButton("=");
+		this.pow = new JButton("^");
+		this.sqr = new JButton("√");
+		this.perc = new JButton("%");
 		this.reset = new JButton("C");
 		// Pensar si instanciar el enum, int y char
 		setSettings();
@@ -105,7 +112,11 @@ public class Engine extends JFrame implements ActionListener {
 	    this.displayPanel.add(this.display);
 
 	    // Configurar el panel de botones
-	    this.buttonPanel.setLayout(new GridLayout(4, 4, 5, 5));
+	    // this.buttonPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+	    this.buttonPanel.setLayout(new GridLayout(5, 4, 5, 5));
+	    setFeaturesButton(this.pow, ButtonType.OPERATOR);
+	    setFeaturesButton(this.sqr, ButtonType.OPERATOR);
+	    setFeaturesButton(this.perc, ButtonType.OPERATOR);
 	    setFeaturesButton(this.n7, ButtonType.REGULAR);
 	    setFeaturesButton(this.n8, ButtonType.REGULAR);
 	    setFeaturesButton(this.n9, ButtonType.REGULAR);
@@ -124,10 +135,14 @@ public class Engine extends JFrame implements ActionListener {
 	    setFeaturesButton(this.add, ButtonType.OPERATOR);
 
 	    // Añadir botones al panel de botones
+	    this.buttonPanel.add(this.pow);
+	    this.buttonPanel.add(this.sqr);
+	    this.buttonPanel.add(this.perc);
+	    this.buttonPanel.add(this.add);
 	    this.buttonPanel.add(this.n7);
 	    this.buttonPanel.add(this.n8);
 	    this.buttonPanel.add(this.n9);
-	    this.buttonPanel.add(this.divide);
+	    this.buttonPanel.add(this.subtract);
 	    this.buttonPanel.add(this.n4);
 	    this.buttonPanel.add(this.n5);
 	    this.buttonPanel.add(this.n6);
@@ -135,11 +150,11 @@ public class Engine extends JFrame implements ActionListener {
 	    this.buttonPanel.add(this.n1);
 	    this.buttonPanel.add(this.n2);
 	    this.buttonPanel.add(this.n3);
-	    this.buttonPanel.add(this.subtract);
-	    this.buttonPanel.add(this.reset);
-	    this.buttonPanel.add(this.n0);
+	    this.buttonPanel.add(this.divide);
+	    //this.buttonPanel.add(this.reset);
 	    this.buttonPanel.add(this.equal);
-	    this.buttonPanel.add(this.add);
+	    this.buttonPanel.add(this.n0);
+	    this.buttonPanel.add(this.reset);
 
 	    // Configurar la ventana principal
 	    this.contentPanel.setLayout(new BorderLayout());
@@ -148,7 +163,7 @@ public class Engine extends JFrame implements ActionListener {
 	    this.frame.setLayout(new BorderLayout());
 	    this.frame.add(this.contentPanel, BorderLayout.CENTER);
 	    
-		this.frame.setLocation(750, 350);
+		this.frame.setLocation(550, 250);
 		this.frame.setSize(400, 400);
 		this.frame.setVisible(true);
 		this.frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -259,37 +274,54 @@ public class Engine extends JFrame implements ActionListener {
 	 * @param e
 	 */
 	public void actionPerformed(ActionEvent e) {
-		
-		// A FALTA DE QUE FUNCIONEN LAS OPERACIONES CON NÚMEROS NEGATIVOS
-		
 	    String op = e.getActionCommand();
 	    switch (op) {
 	        case "C":
 	            this.display.setText("");
 	            this.num1 = 0;
 	            this.num2 = 0;
-	            this.operation = '\0';
-	        break;
+	            this.operation = '0';
+	            break;
 	        case "=":
-	            String[] parts = display.getText().split("[+\\-x/]");
-	             
-	            // Condición para que no se ejecute ninguna acción si se han seleccionado más de dos números
-	            if (parts.length == 2) {
+	            String displayText = this.display.getText().trim();
+
+	            // Expresión regular: \\s(?=[+x/-]) busca un espacio en blanco antes del operador.
+	            // (?<=[+x/-])\\s busca un espacio en blanco después del operador.
+	            // El operador | (OR) separa ambas expresiones regulares.
+	            // Con esto conseguimos dividir el texto del display de la calculadora eliminando
+	            // los espacios en blanco entre operadores, y si no hay un espacio en blanco, en el caso de "-"
+	            // el número mantiene el signo y ya no sería operador, sino indicador de que es negativo.
+	            String[] parts = displayText.split("\\s(?=[+x/-])|(?<=[+x/-])\\s");
+	            
+	            if (parts.length == 3) {
 	                this.num1 = Integer.parseInt(parts[0].trim());
-	                this.num2 = Integer.parseInt(parts[1].trim());
+	                this.operation = parts[1].trim().charAt(0);
+	                this.num2 = Integer.parseInt(parts[2].trim());
 	                operation();
+	            } else {
+	                this.display.setText("Syntax ERROR");
 	            }
-	        break;
-	        case "+":
+	            break;
 	        case "-":
+	            // Si está vacío o termina con un espacio (es decir, antes hay un operador), 
+	        	// se interpreta como número negativo
+	            if (this.display.getText().isEmpty() || this.display.getText().endsWith(" ")) {
+	                this.display.setText(this.display.getText() + "-");
+	            } else {
+	                // Es un operador
+	                this.display.setText(this.display.getText() + " - ");
+	            }
+	            break;
+	        case "+":
 	        case "x":
 	        case "/":
-	            this.operation = op.charAt(0);
-	            this.display.setText(this.display.getText() + op);
-	        break;
+	            if (!this.display.getText().endsWith(" ")) {
+	                this.display.setText(this.display.getText() + " " + op + " ");
+	            }
+	            break;
 	        default:
 	            this.display.setText(this.display.getText() + op);
-	        break;
+	            break;
 	    }
 	}
 	
