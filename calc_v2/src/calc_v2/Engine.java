@@ -1,4 +1,4 @@
-package calc_v1;
+package calc_v2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -33,17 +33,25 @@ public class Engine extends JFrame implements ActionListener {
 	private JFrame frame;
 	// Panel general que ocupa toda la ventana
 	private JPanel contentPanel;
-	// Panel norte que contiene el display
-	private JPanel displayPanel;
+	// Panel norte que contiene subpaneles
+	private JPanel infoPanel;
+	// Subpanel izquierdo que contiene la base
+	private JPanel basePanel;
+	// Subpanel derecho que contiene la marca
+	private JPanel brandPanel;
+	// Panel central que contiene el display
+	private JPanel displayPanel; 
 	// Panel sur que contiene los botones
 	private JPanel buttonPanel;
+	// Base
+	private JTextField base;
 	// Display
 	private JTextField display;
 	// Botones
-	private JButton n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, add, subtract, multiply, divide, pow, sqr, perc,
+	private JButton del, brand, b2, b8, b10, b16, a, b, c, d, e, f, info, owner, n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, add, subtract, multiply, divide, pow, sqr, perc,
 	equal, reset, extra;
 	// Tipos de boton
-	private enum ButtonType {REGULAR, OPERATOR, EXTRA};
+	private enum ButtonType {REGULAR, OPERATOR, BASE, HEX, EXTRA};
 	// Almacenar temporalmente ciertos valores
 	private int num1, num2, result;
 	private char operation;
@@ -55,9 +63,26 @@ public class Engine extends JFrame implements ActionListener {
 	public Engine() {
 		this.frame = new JFrame("crisu_Calc :3 owo");
 		this.contentPanel = new JPanel();
+		this.infoPanel = new JPanel();
+		this.basePanel = new JPanel();
+		this.brandPanel = new JPanel();
 		this.displayPanel = new JPanel();
 		this.buttonPanel = new JPanel();
 		this.display = new JTextField();
+		this.base = new JTextField();
+		this.brand = new JButton("Marca");
+		this.b2 = new JButton("B2");
+		this.b8 = new JButton("B8");
+		this.b10 = new JButton("B10");
+		this.b16 = new JButton("B16");
+		this.a = new JButton("A");
+		this.b = new JButton("B");
+		this.c = new JButton("C");
+		this.d = new JButton("D");
+		this.e = new JButton("E");
+		this.f = new JButton("F");
+		this.info = new JButton("INFO");
+		this.owner = new JButton("OWNER");
 		this.n0 = new JButton("0");
 		this.n1 = new JButton("1");
 		this.n2 = new JButton("2");
@@ -76,12 +101,11 @@ public class Engine extends JFrame implements ActionListener {
 		this.pow = new JButton("^");
 		this.sqr = new JButton("√");
 		this.perc = new JButton("%");
-		this.reset = new JButton("C");
-		this.extra = new JButton("★");
+		this.reset = new JButton("R");
+		// this.extra = new JButton("★");
+		this.del = new JButton("⌫");
 		setSettings();
 		addActionEvent();
-		
-		// ME GUSTARIA AÑADIR BOTONES DE PARENTESIS.
 	}
 	
 	/**
@@ -95,19 +119,41 @@ public class Engine extends JFrame implements ActionListener {
 	    this.display.setPreferredSize(new Dimension(380, 60));
 	    this.display.setBackground(Color.WHITE);
 
+	    // Configurar subpaneles izquierdo y derecho
+	    this.basePanel.setLayout(new BorderLayout());
+	    this.brandPanel.setLayout(new BorderLayout());
+	    
+	    // Configurar el panel norte
+	    this.infoPanel.setLayout(new GridLayout(1, 2, 50, 50));
+	    this.infoPanel.add(basePanel, BorderLayout.WEST);
+	    this.infoPanel.add(brandPanel, BorderLayout.EAST);
+	    
 	    // Configurar el panel del display
 	    this.displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 	    this.displayPanel.setPreferredSize(new Dimension(400, 80));
 	    this.displayPanel.add(this.display);
 
 	    // Configurar el panel de botones
-	    this.buttonPanel.setLayout(new GridLayout(5, 4, 5, 5));
-	    setFeaturesButton(this.extra, ButtonType.EXTRA);
+	    this.buttonPanel.setLayout(new GridLayout(8, 4, 5, 5));
+	    setFeaturesButton(this.brand, ButtonType.EXTRA);
+	    setFeaturesButton(this.del, ButtonType.EXTRA);
+	    setFeaturesButton(this.info, ButtonType.EXTRA);
+	    setFeaturesButton(this.owner, ButtonType.EXTRA);
+	    setFeaturesButton(this.b2, ButtonType.BASE);
+	    setFeaturesButton(this.b8, ButtonType.BASE);
+	    setFeaturesButton(this.b10, ButtonType.BASE);
+	    setFeaturesButton(this.b16, ButtonType.BASE);
+	    setFeaturesButton(this.a, ButtonType.HEX);
+	    setFeaturesButton(this.b, ButtonType.HEX);
+	    setFeaturesButton(this.c, ButtonType.HEX);
+	    setFeaturesButton(this.d, ButtonType.HEX);
+	    setFeaturesButton(this.e, ButtonType.HEX);
+	    setFeaturesButton(this.f, ButtonType.HEX);
 	    setFeaturesButton(this.add, ButtonType.OPERATOR);
 	    setFeaturesButton(this.subtract, ButtonType.OPERATOR);
 	    setFeaturesButton(this.multiply, ButtonType.OPERATOR);
 	    setFeaturesButton(this.divide, ButtonType.OPERATOR);
-	    setFeaturesButton(this.reset, ButtonType.OPERATOR);
+	    setFeaturesButton(this.reset, ButtonType.EXTRA);
 	    setFeaturesButton(this.equal, ButtonType.OPERATOR);
 	    setFeaturesButton(this.pow, ButtonType.OPERATOR);
 	    setFeaturesButton(this.sqr, ButtonType.OPERATOR);
@@ -124,6 +170,19 @@ public class Engine extends JFrame implements ActionListener {
 	    setFeaturesButton(this.n9, ButtonType.REGULAR);
 
 	    // Añadir botones al panel de botones
+	    this.brandPanel.add(this.brand);
+	    this.buttonPanel.add(this.b2);
+	    this.buttonPanel.add(this.b8);
+	    this.buttonPanel.add(this.b10);
+	    this.buttonPanel.add(this.b16);
+	    this.buttonPanel.add(this.a);
+	    this.buttonPanel.add(this.b);
+	    this.buttonPanel.add(this.c);
+	    this.buttonPanel.add(this.info);
+	    this.buttonPanel.add(this.d);
+	    this.buttonPanel.add(this.e);
+	    this.buttonPanel.add(this.f);
+	    this.buttonPanel.add(this.owner);
 	    this.buttonPanel.add(this.pow);
 	    this.buttonPanel.add(this.sqr);
 	    this.buttonPanel.add(this.perc);
@@ -143,16 +202,17 @@ public class Engine extends JFrame implements ActionListener {
 	    this.buttonPanel.add(this.reset);
 	    this.buttonPanel.add(this.n0);
 	    this.buttonPanel.add(this.equal);
-	    this.buttonPanel.add(this.extra);
+	    this.buttonPanel.add(this.del);
 
 	    // Configurar la ventana principal
 	    this.contentPanel.setLayout(new BorderLayout());
-	    this.contentPanel.add(this.displayPanel, BorderLayout.NORTH);
-	    this.contentPanel.add(this.buttonPanel, BorderLayout.CENTER);
+	    this.contentPanel.add(this.infoPanel, BorderLayout.NORTH);
+	    this.contentPanel.add(this.displayPanel, BorderLayout.CENTER);
+	    this.contentPanel.add(this.buttonPanel, BorderLayout.SOUTH);
 	    this.frame.setLayout(new BorderLayout());
 	    this.frame.add(this.contentPanel, BorderLayout.CENTER);
-		this.frame.setLocation(550, 250);
-		this.frame.setSize(500, 400);
+		this.frame.setLocation(550, 150);
+		this.frame.setSize(500, 600);
 		this.frame.setVisible(true);
 		this.frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -164,26 +224,34 @@ public class Engine extends JFrame implements ActionListener {
 	 * @param _type identifica de que tipo es el boton.
 	 */
 	public void setFeaturesButton(JButton _button, ButtonType _type) {
-		_button.setPreferredSize(new Dimension(75, 75));
+		_button.setPreferredSize(new Dimension(45, 50));
 		// Con estas dos opciones nos aseguramos de que el highlight azul desaparezca al hacer click en el boton
 		_button.setUI(new BasicButtonUI());
 	    _button.setFocusPainted(false);
 
-	    // Comprobamos si es REGULAR, OPERATOR o EXTRA
+	    // Personalizamos el botón según su tipo
 	    if (_type == ButtonType.REGULAR) {
 	        _button.setBackground(new Color(251, 248, 204));
 	        _button.setForeground(Color.DARK_GRAY);
-	        _button.setFont(new Font("Arial", Font.BOLD, 18));
 	        _button.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+	        _button.setFont(new Font("Arial", Font.BOLD, 15));
 	    } else if (_type == ButtonType.OPERATOR) {
 	        _button.setBackground(new Color(204, 229, 255));
 	        _button.setForeground(Color.DARK_GRAY);
-	        _button.setFont(new Font("Arial", Font.BOLD, 18));
 	        _button.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+	        _button.setFont(new Font("Arial", Font.BOLD, 15));
 	    } else if (_type == ButtonType.EXTRA) {
 	    	_button.setBackground(new Color(255, 204, 213));
 	    	_button.setForeground(Color.WHITE);
 	    	_button.setBorder(BorderFactory.createLineBorder(Color.PINK));
+	    } else if (_type == ButtonType.BASE) {
+	    	_button.setBackground(new Color(204, 255, 213));
+	    	_button.setForeground(Color.DARK_GRAY);
+	    	_button.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+	    } else if (_type == ButtonType.HEX) {
+	    	_button.setBackground(new Color(213, 204, 255));
+	    	_button.setForeground(Color.DARK_GRAY);
+	    	_button.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
 	    }
 
 	    // Hover   
@@ -240,7 +308,7 @@ public class Engine extends JFrame implements ActionListener {
 	    this.perc.addActionListener(this);
 	    this.equal.addActionListener(this);
 	    this.reset.addActionListener(this);
-	    this.extra.addActionListener(this);
+	    this.owner.addActionListener(this);
 	}
 	
 	/**
@@ -293,7 +361,10 @@ public class Engine extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 	    String op = e.getActionCommand();
 	    switch (op) {
-	    	case "★":
+	    	case "INFO":
+	    		
+	    		break;
+	    	case "OWNER":
 	    		try {
                     Desktop desktop = Desktop.getDesktop();
                     if (desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -303,7 +374,7 @@ public class Engine extends JFrame implements ActionListener {
                     ex.printStackTrace();
                 }
 	    		break;
-	        case "C":
+	        case "R":
 	            this.display.setText("");
 	            this.num1 = 0;
 	            this.num2 = 0;
@@ -359,3 +430,4 @@ public class Engine extends JFrame implements ActionListener {
 	
 	
 }
+
