@@ -51,7 +51,7 @@ public class Engine extends JFrame implements ActionListener {
 	private JButton del, brand, b2, b8, b10, b16, a, b, c, d, e, f, info, owner, n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, add, subtract, multiply, divide, pow, sqr, perc,
 	equal, reset, extra;
 	// Tipos de boton
-	private enum ButtonType {REGULAR, OPERATOR, BASE, HEX, EXTRA};
+	private enum ButtonType {REGULAR, OPERATOR, BASE, HEX, EXTRA, BRAND};
 	// Almacenar temporalmente ciertos valores
 	private int num1, num2, result;
 	private char operation;
@@ -109,6 +109,16 @@ public class Engine extends JFrame implements ActionListener {
 	}
 	
 	/**
+	 * Metodo addButtonsToPanel().
+	 * @param buttons
+	 */
+	private void addButtonsToPanel(JButton[] buttons) {
+	    for (JButton button : buttons) {
+	        this.buttonPanel.add(button);
+	    }
+	}
+	
+	/**
 	 * Metodo setSettings(). Establece la configuracion principal de todos los componentes visuales de la ventana.
 	 */
 	public void setSettings() {
@@ -116,7 +126,7 @@ public class Engine extends JFrame implements ActionListener {
 	    this.display.setEditable(false);
 	    this.display.setHorizontalAlignment(JTextField.RIGHT);
 	    this.display.setFont(new Font("Arial", Font.BOLD, 20));
-	    this.display.setPreferredSize(new Dimension(380, 60));
+	    this.display.setPreferredSize(new Dimension(380, 50));
 	    this.display.setBackground(Color.WHITE);
 
 	    // Configurar subpaneles izquierdo y derecho
@@ -135,76 +145,23 @@ public class Engine extends JFrame implements ActionListener {
 
 	    // Configurar el panel de botones
 	    this.buttonPanel.setLayout(new GridLayout(8, 4, 5, 5));
-	    setFeaturesButton(this.brand, ButtonType.EXTRA);
-	    setFeaturesButton(this.del, ButtonType.EXTRA);
-	    setFeaturesButton(this.info, ButtonType.EXTRA);
-	    setFeaturesButton(this.owner, ButtonType.EXTRA);
-	    setFeaturesButton(this.b2, ButtonType.BASE);
-	    setFeaturesButton(this.b8, ButtonType.BASE);
-	    setFeaturesButton(this.b10, ButtonType.BASE);
-	    setFeaturesButton(this.b16, ButtonType.BASE);
-	    setFeaturesButton(this.a, ButtonType.HEX);
-	    setFeaturesButton(this.b, ButtonType.HEX);
-	    setFeaturesButton(this.c, ButtonType.HEX);
-	    setFeaturesButton(this.d, ButtonType.HEX);
-	    setFeaturesButton(this.e, ButtonType.HEX);
-	    setFeaturesButton(this.f, ButtonType.HEX);
-	    setFeaturesButton(this.add, ButtonType.OPERATOR);
-	    setFeaturesButton(this.subtract, ButtonType.OPERATOR);
-	    setFeaturesButton(this.multiply, ButtonType.OPERATOR);
-	    setFeaturesButton(this.divide, ButtonType.OPERATOR);
-	    setFeaturesButton(this.reset, ButtonType.EXTRA);
-	    setFeaturesButton(this.equal, ButtonType.OPERATOR);
-	    setFeaturesButton(this.pow, ButtonType.OPERATOR);
-	    setFeaturesButton(this.sqr, ButtonType.OPERATOR);
-	    setFeaturesButton(this.perc, ButtonType.OPERATOR);
-	    setFeaturesButton(this.n0, ButtonType.REGULAR);
-	    setFeaturesButton(this.n1, ButtonType.REGULAR);
-	    setFeaturesButton(this.n2, ButtonType.REGULAR);
-	    setFeaturesButton(this.n3, ButtonType.REGULAR);
-	    setFeaturesButton(this.n4, ButtonType.REGULAR);
-	    setFeaturesButton(this.n5, ButtonType.REGULAR);
-	    setFeaturesButton(this.n6, ButtonType.REGULAR);
-	    setFeaturesButton(this.n7, ButtonType.REGULAR);
-	    setFeaturesButton(this.n8, ButtonType.REGULAR);
-	    setFeaturesButton(this.n9, ButtonType.REGULAR);
-
-	    // Añadir botones al panel de botones
-	    this.brandPanel.add(this.brand);
-	    this.buttonPanel.add(this.b2);
-	    this.buttonPanel.add(this.b8);
-	    this.buttonPanel.add(this.b10);
-	    this.buttonPanel.add(this.b16);
-	    this.buttonPanel.add(this.a);
-	    this.buttonPanel.add(this.b);
-	    this.buttonPanel.add(this.c);
-	    this.buttonPanel.add(this.info);
-	    this.buttonPanel.add(this.d);
-	    this.buttonPanel.add(this.e);
-	    this.buttonPanel.add(this.f);
-	    this.buttonPanel.add(this.owner);
-	    this.buttonPanel.add(this.pow);
-	    this.buttonPanel.add(this.sqr);
-	    this.buttonPanel.add(this.perc);
-	    this.buttonPanel.add(this.add);
-	    this.buttonPanel.add(this.n7);
-	    this.buttonPanel.add(this.n8);
-	    this.buttonPanel.add(this.n9);
-	    this.buttonPanel.add(this.subtract);
-	    this.buttonPanel.add(this.n4);
-	    this.buttonPanel.add(this.n5);
-	    this.buttonPanel.add(this.n6);
-	    this.buttonPanel.add(this.multiply);
-	    this.buttonPanel.add(this.n1);
-	    this.buttonPanel.add(this.n2);
-	    this.buttonPanel.add(this.n3);
-	    this.buttonPanel.add(this.divide);
-	    this.buttonPanel.add(this.reset);
-	    this.buttonPanel.add(this.n0);
-	    this.buttonPanel.add(this.equal);
-	    this.buttonPanel.add(this.del);
+	    JButton[] regularButtons = {n0, n1, n2, n3, n4, n5, n6, n7, n8, n9};
+	    JButton[] operatorButtons = {add, subtract, multiply, divide, pow, sqr, perc, equal};
+	    JButton[] baseButtons = {b2, b8, b10, b16};
+	    JButton[] hexButtons = {a, b, c, d, e, f};
+	    JButton[] extraButtons = {del, reset, info, owner};
+	    for (JButton btn : regularButtons) setFeaturesButton(btn, ButtonType.REGULAR);
+	    for (JButton btn : operatorButtons) setFeaturesButton(btn, ButtonType.OPERATOR);
+	    for (JButton btn : baseButtons) setFeaturesButton(btn, ButtonType.BASE);
+	    for (JButton btn : hexButtons) setFeaturesButton(btn, ButtonType.HEX);
+	    for (JButton btn : extraButtons) setFeaturesButton(btn, ButtonType.EXTRA);
+	    addButtonsToPanel(new JButton[]{b2, b8, b10, b16, a, b, c, info, d, e, f, owner, 
+                pow, sqr, perc, add, n7, n8, n9, subtract, 
+                n4, n5, n6, multiply, n1, n2, n3, divide, 
+                reset, n0, equal, del});
 
 	    // Configurar la ventana principal
+	    this.contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 	    this.contentPanel.setLayout(new BorderLayout());
 	    this.contentPanel.add(this.infoPanel, BorderLayout.NORTH);
 	    this.contentPanel.add(this.displayPanel, BorderLayout.CENTER);
@@ -252,35 +209,50 @@ public class Engine extends JFrame implements ActionListener {
 	    	_button.setBackground(new Color(213, 204, 255));
 	    	_button.setForeground(Color.DARK_GRAY);
 	    	_button.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+	    } else if (_type == ButtonType.BRAND) {
+	    	_button.setPreferredSize(new Dimension(25, 30));
 	    }
 
-	    // Hover   
+	 // Hover   
 	    _button.addMouseListener(new MouseAdapter() {
 	    	
-	    	// Al pasar el cursor sobre un boton, el color se oscurece
-	        @Override
-	        public void mouseEntered(MouseEvent evt) {
-	        	if (_type == ButtonType.REGULAR) {
-	        		_button.setBackground(new Color(240, 238, 180));
-	        	} else if (_type == ButtonType.OPERATOR) {
-	        		_button.setBackground(new Color(180, 215, 240));
-	        	} else if (_type == ButtonType.EXTRA) {
-	        		_button.setBackground(new Color(255, 179, 193));
-	        	}
-	        }
+	    	// Al pasar el cursor sobre un botón, el color se oscurece
+	    	@Override
+	    	public void mouseEntered(MouseEvent evt) {
+	    		if (_type == ButtonType.REGULAR) {
+	    			_button.setBackground(new Color(240, 238, 180));
+	    		} else if (_type == ButtonType.OPERATOR) {
+	    			_button.setBackground(new Color(180, 215, 240));
+	    		} else if (_type == ButtonType.EXTRA) {
+	    			_button.setBackground(new Color(255, 179, 193));
+	    		} else if (_type == ButtonType.BASE) {
+	    			_button.setBackground(new Color(160, 230, 190)); // Color más oscuro para BASE
+	    		} else if (_type == ButtonType.HEX) {
+	    			_button.setBackground(new Color(190, 160, 255)); // Color más oscuro para HEX
+	    		} else if (_type == ButtonType.BRAND) {
+	    			//_button.setBackground(new Color(250, 200, 120)); // Color más oscuro para BRAND
+	    		}
+	    	}
 
-	        // Cuando el cursor ya no esta sobre el botón, vuelve a su color original
-	        @Override
-	        public void mouseExited(MouseEvent evt) {
-	        	if (_type == ButtonType.REGULAR) {
-	        		_button.setBackground(new Color(251, 248, 204));
-	        	} else if (_type == ButtonType.OPERATOR) {
-	        		_button.setBackground(new Color(204, 229, 255));
-	        	} else if (_type == ButtonType.EXTRA) {
-	        		_button.setBackground(new Color(255, 204, 213));
-	        	}
-	        }
+	    	// Cuando el cursor ya no está sobre el botón, vuelve a su color original
+	    	@Override
+	    	public void mouseExited(MouseEvent evt) {
+	    		if (_type == ButtonType.REGULAR) {
+	    			_button.setBackground(new Color(251, 248, 204));
+	    		} else if (_type == ButtonType.OPERATOR) {
+	    			_button.setBackground(new Color(204, 229, 255));
+	    		} else if (_type == ButtonType.EXTRA) {
+	    			_button.setBackground(new Color(255, 204, 213));
+	    		} else if (_type == ButtonType.BASE) {
+	    			_button.setBackground(new Color(204, 255, 213)); // Color original para BASE
+	    		} else if (_type == ButtonType.HEX) {
+	    			_button.setBackground(new Color(213, 204, 255)); // Color original para HEX
+	    		} else if (_type == ButtonType.BRAND) {
+	    			//_button.setBackground(new Color(255, 223, 150)); // Color original para BRAND
+	    		}
+	    	}
 	    });
+
 	}
 	
 	/**
@@ -289,26 +261,11 @@ public class Engine extends JFrame implements ActionListener {
 	 * el boton que se pulsa.
 	 */
 	public void addActionEvent() {
-	    this.n0.addActionListener(this);
-	    this.n1.addActionListener(this);
-	    this.n2.addActionListener(this);
-	    this.n3.addActionListener(this);
-	    this.n4.addActionListener(this);
-	    this.n5.addActionListener(this);
-	    this.n6.addActionListener(this);
-	    this.n7.addActionListener(this);
-	    this.n8.addActionListener(this);
-	    this.n9.addActionListener(this);
-	    this.add.addActionListener(this);
-	    this.subtract.addActionListener(this);
-	    this.multiply.addActionListener(this);
-	    this.divide.addActionListener(this);
-	    this.pow.addActionListener(this);
-	    this.sqr.addActionListener(this);
-	    this.perc.addActionListener(this);
-	    this.equal.addActionListener(this);
-	    this.reset.addActionListener(this);
-	    this.owner.addActionListener(this);
+		JButton[] buttons = {b2, b8, b10, b16, a, b, c, d, e, f, n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, 
+                add, subtract, multiply, divide, pow, sqr, perc, equal, reset, del, info, owner, brand};
+		for (JButton button : buttons) {
+			button.addActionListener(this);
+		}
 	}
 	
 	/**
