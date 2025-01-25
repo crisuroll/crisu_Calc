@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -44,7 +45,8 @@ public class Engine extends JFrame implements ActionListener {
 	// Panel sur que contiene los botones
 	private JPanel buttonPanel;
 	// Base
-	private JTextField base;
+	private JLabel base;
+	private Base baseActual;
 	// Display
 	private JTextField display;
 	// Botones
@@ -52,6 +54,8 @@ public class Engine extends JFrame implements ActionListener {
 	equal, reset, extra;
 	// Tipos de boton
 	private enum ButtonType {REGULAR, OPERATOR, BASE, HEX, EXTRA, BRAND};
+	// Tipos de base
+	private enum Base {B2, B8, B10, B16};
 	// Almacenar temporalmente ciertos valores
 	private int num1, num2, result;
 	private char operation;
@@ -69,8 +73,8 @@ public class Engine extends JFrame implements ActionListener {
 		this.displayPanel = new JPanel();
 		this.buttonPanel = new JPanel();
 		this.display = new JTextField();
-		this.base = new JTextField();
-		this.brand = new JButton("Marca");
+		this.base = new JLabel("Base: ");
+		this.brand = new JButton("CASIO");
 		this.b2 = new JButton("B2");
 		this.b8 = new JButton("B8");
 		this.b10 = new JButton("B10");
@@ -102,7 +106,6 @@ public class Engine extends JFrame implements ActionListener {
 		this.sqr = new JButton("√");
 		this.perc = new JButton("%");
 		this.reset = new JButton("R");
-		// this.extra = new JButton("★");
 		this.del = new JButton("⌫");
 		setSettings();
 		addActionEvent();
@@ -122,7 +125,7 @@ public class Engine extends JFrame implements ActionListener {
 	 * Metodo setSettings(). Establece la configuracion principal de todos los componentes visuales de la ventana.
 	 */
 	public void setSettings() {
-	    // Configurar el JTextField
+	    // Configurar el display
 	    this.display.setEditable(false);
 	    this.display.setHorizontalAlignment(JTextField.RIGHT);
 	    this.display.setFont(new Font("Arial", Font.BOLD, 20));
@@ -131,7 +134,9 @@ public class Engine extends JFrame implements ActionListener {
 
 	    // Configurar subpaneles izquierdo y derecho
 	    this.basePanel.setLayout(new BorderLayout());
+	    this.basePanel.add(base);
 	    this.brandPanel.setLayout(new BorderLayout());
+	    this.brandPanel.add(brand);
 	    
 	    // Configurar el panel norte
 	    this.infoPanel.setLayout(new GridLayout(1, 2, 50, 50));
@@ -149,7 +154,7 @@ public class Engine extends JFrame implements ActionListener {
 	    JButton[] operatorButtons = {add, subtract, multiply, divide, pow, sqr, perc, equal};
 	    JButton[] baseButtons = {b2, b8, b10, b16};
 	    JButton[] hexButtons = {a, b, c, d, e, f};
-	    JButton[] extraButtons = {del, reset, info, owner};
+	    JButton[] extraButtons = {del, reset, info, owner, brand};
 	    for (JButton btn : regularButtons) setFeaturesButton(btn, ButtonType.REGULAR);
 	    for (JButton btn : operatorButtons) setFeaturesButton(btn, ButtonType.OPERATOR);
 	    for (JButton btn : baseButtons) setFeaturesButton(btn, ButtonType.BASE);
@@ -169,7 +174,7 @@ public class Engine extends JFrame implements ActionListener {
 	    this.frame.setLayout(new BorderLayout());
 	    this.frame.add(this.contentPanel, BorderLayout.CENTER);
 		this.frame.setLocation(550, 150);
-		this.frame.setSize(500, 600);
+		this.frame.setSize(500, 620);
 		this.frame.setVisible(true);
 		this.frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -267,6 +272,43 @@ public class Engine extends JFrame implements ActionListener {
 			button.addActionListener(this);
 		}
 	}
+
+	/**
+	 * Metodo convertFromDecimal(). Convierte el numero de base decimal a la base seleccionada.
+	 * @param value
+	 * @param base
+	 * @return
+	 */
+    private String convertFromDecimal(int value, Base base) {
+        switch (base) {
+            case B2: return Integer.toBinaryString(value);
+            case B8: return Integer.toOctalString(value);
+            case B16: return Integer.toHexString(value).toUpperCase();
+            default: return String.valueOf(value);
+        }
+    }
+	
+	/**
+	 * Metodo updateBase(). Actualiza el texto de la calculadora, indicando la base en la que se va a operar.
+	 * 
+	 */
+	private void updateBase(Base _base) {
+	    switch (_base) {
+	        case B2:
+	            this.base.setText("Base: Binaria");
+	            break;
+	        case B8:
+	        	this.base.setText("Base: Octal");
+	            break;
+	        case B10:
+	        	this.base.setText("Base: Decimal");
+	            break;
+	        case B16:
+	        	this.base.setText("Base: Hexadecimal");
+	            break;
+	    }
+	}
+
 	
 	/**
 	 * Metodo operation(). Comprueba que operacion se debe realizar. Mira el estado actual del atributo 
@@ -307,7 +349,8 @@ public class Engine extends JFrame implements ActionListener {
 	        default:
 	            this.result = 0;
 	    }
-	    this.display.setText(String.valueOf(this.result));
+
+        this.display.setText(convertFromDecimal(this.result, baseActual));
 	}
 	
 	/**
@@ -318,6 +361,16 @@ public class Engine extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 	    String op = e.getActionCommand();
 	    switch (op) {
+	    	case "CASIO":
+	    		try {
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                        desktop.browse(new URI("https://www.casio.com/es/scientific-calculators/"));
+                    }
+                } catch (IOException | URISyntaxException ex) {
+                    ex.printStackTrace();
+                }
+	    		break;
 	    	case "INFO":
 	    		
 	    		break;
@@ -331,8 +384,25 @@ public class Engine extends JFrame implements ActionListener {
                     ex.printStackTrace();
                 }
 	    		break;
+	    	case "B2":
+	    		this.baseActual = Base.B2;
+	    		updateBase(Base.B2);
+	    		break;
+	    	case "B8":
+	    		this.baseActual = Base.B8;
+	    		updateBase(Base.B8);
+	    		break;
+	    	case "B10":
+	    		this.baseActual = Base.B10;
+	    		updateBase(Base.B10);
+	    		break;
+	    	case "B16":
+	    		this.baseActual = Base.B16;
+	    		updateBase(Base.B16);
+	    		break;
 	        case "R":
 	            this.display.setText("");
+	            this.base.setText("Base: ");
 	            this.num1 = 0;
 	            this.num2 = 0;
 	            this.operation = '0';
