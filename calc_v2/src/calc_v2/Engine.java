@@ -272,6 +272,15 @@ public class Engine extends JFrame implements ActionListener {
 			button.addActionListener(this);
 		}
 	}
+	
+    private int convertToDecimal(String value, Base base) {
+        switch (base) {
+            case B2: return Integer.parseInt(value, 2);
+            case B8: return Integer.parseInt(value, 8);
+            case B16: return Integer.parseInt(value, 16);
+            default: return Integer.parseInt(value);
+        }
+    }
 
 	/**
 	 * Metodo convertFromDecimal(). Convierte el numero de base decimal a la base seleccionada.
@@ -372,7 +381,7 @@ public class Engine extends JFrame implements ActionListener {
                 }
 	    		break;
 	    	case "INFO":
-	    		
+	    		new VentanaEmergente(this).setVisible(true);
 	    		break;
 	    	case "OWNER":
 	    		try {
@@ -386,18 +395,21 @@ public class Engine extends JFrame implements ActionListener {
 	    		break;
 	    	case "B2":
 	    		this.baseActual = Base.B2;
-	    		updateBase(Base.B2);
-	    		break;
+                updateBase(Base.B2);
+                break;
 	    	case "B8":
 	    		this.baseActual = Base.B8;
+	    		//convertFromDecimal(this.result, baseActual);
 	    		updateBase(Base.B8);
 	    		break;
 	    	case "B10":
 	    		this.baseActual = Base.B10;
+	    		//convertFromDecimal(this.result, baseActual);
 	    		updateBase(Base.B10);
 	    		break;
 	    	case "B16":
 	    		this.baseActual = Base.B16;
+	    		//convertFromDecimal(this.result, baseActual);
 	    		updateBase(Base.B16);
 	    		break;
 	        case "R":
