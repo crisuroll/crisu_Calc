@@ -419,6 +419,25 @@ public class Engine extends JFrame implements ActionListener {
 	            this.num2 = 0;
 	            this.operation = '0';
 	            break;
+	        case "⌫":
+	            String currentText = this.display.getText();
+	            if (!currentText.isEmpty()) {
+	                if (currentText.endsWith(" ")) {
+	                    // Caso 1: Si termina con un espacio, eliminar los últimos tres caracteres
+	                    this.display.setText(currentText.substring(0, currentText.length() - 3));
+	                } else if (currentText.length() > 1 && currentText.charAt(currentText.length() - 2) == '-' && 
+	                           !Character.isWhitespace(currentText.charAt(currentText.length() - 2))) {
+	                    // Caso 2: Si es un número negativo (como "-6"), eliminar los últimos dos caracteres
+	                    this.display.setText(currentText.substring(0, currentText.length() - 2));
+	                } else if (currentText.length() == 1 && currentText.equals("-")) {
+	                    // Caso 3: Si es el operador "-"
+	                    this.display.setText("");
+	                } else {
+	                    // Caso 4: Eliminar solo el último carácter
+	                    this.display.setText(currentText.substring(0, currentText.length() - 1));
+	                }
+	            }
+	            break;
 	        case "=":
 	            String displayText = this.display.getText().trim();
 
