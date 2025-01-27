@@ -51,7 +51,7 @@ public class Engine extends JFrame implements ActionListener {
 	private JTextField display;
 	// Botones
 	private JButton del, brand, b2, b8, b10, b16, a, b, c, d, e, f, info, owner, n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, add, subtract, multiply, divide, pow, sqr, perc,
-	equal, reset, extra;
+	equal, reset;
 	// Tipos de boton
 	private enum ButtonType {REGULAR, OPERATOR, BASE, HEX, EXTRA, BRAND};
 	// Tipos de base
@@ -73,8 +73,7 @@ public class Engine extends JFrame implements ActionListener {
 		this.displayPanel = new JPanel();
 		this.buttonPanel = new JPanel();
 		this.display = new JTextField();
-		this.baseActual = Base.B10;
-		this.base = new JLabel("Base: Decimal");
+		this.base = new JLabel("Base: ");
 		this.brand = new JButton("CASIO");
 		this.b2 = new JButton("B2");
 		this.b8 = new JButton("B8");
@@ -110,7 +109,6 @@ public class Engine extends JFrame implements ActionListener {
 		this.del = new JButton("⌫");
 		setSettings();
 		addActionEvent();
-		updateBase(this.baseActual);
 	}
 	
 	/**
@@ -327,28 +325,6 @@ public class Engine extends JFrame implements ActionListener {
 	        	break;
 	    }
 	}
-	
-	/**
-	 * Metodo isValidInput().
-	 */
-	private boolean isValidInput(String input, Base base) {
-	    String regex;
-	    switch (base) {
-	        case B2:
-	            regex = "^[01]+$"; // Solo 0 y 1
-	            break;
-	        case B8:
-	            regex = "^[0-7]+$"; // Solo dígitos octales
-	            break;
-	        case B16:
-	            regex = "^[0-9A-Fa-f]+$"; // Dígitos y letras hexadecimales
-	            break;
-	        default:
-	            regex = "^[0-9]+$"; // Solo dígitos decimales
-	            break;
-	    }
-	    return input.matches(regex);
-	}
 
 	/**
 	 * Metodo disableForBinary().
@@ -395,12 +371,13 @@ public class Engine extends JFrame implements ActionListener {
 	            	this.result = this.num1 * this.num2;
 	                break;
 	            case '/':
-	                if (this.num2 == 0) {
-	                    this.display.setText("División por 0 no permitida");
-	                    return;
-	                }
-	                this.result = this.num1 / this.num2;
-	                break;
+		            if (this.num2 != 0) {
+		                this.result = this.num1 / this.num2;
+		            } else {
+		                this.display.setText("No hagas eso :(");
+		                return;
+		            }
+		            break;
 	            case '^':
 		        	this.result = num1;
 		        	for (int i = 1; i < num2; i++) {
@@ -414,10 +391,9 @@ public class Engine extends JFrame implements ActionListener {
 		        	this.result = (num1 * num2) / 100;
 		        	break;
 	            default:
-	                this.display.setText("Operación no válida");
+	                this.display.setText("Syntax ERROR");
 	                return;
 	        }
-
 	        // Convertir y mostrar el resultado en la base actual
 	        this.display.setText(convertFromDecimal(this.result, this.baseActual));
 	    } catch (NumberFormatException ex) {
@@ -466,27 +442,21 @@ public class Engine extends JFrame implements ActionListener {
 	                if (!this.display.getText().isEmpty() && !this.display.getText().trim().matches(".*[+\\-x/^√% ].*")) {
 	                    // Convertir el número en el display de la base actual a decimal
 	                    int currentValue = convertToDecimal(this.display.getText().trim(), this.baseActual);
-
-	                    // Actualizar la base actual a la nueva
 	                    this.baseActual = Base.valueOf(op);
-
-	                    // Convertir el valor decimal a la nueva base y mostrarlo
 	                    this.display.setText(convertFromDecimal(currentValue, this.baseActual));
 	                } else {
 	                    // Si el display está vacío o contiene operadores, solo actualizar la base
 	                    this.baseActual = Base.valueOf(op);
 	                }
-
-	                // Actualizar el indicador de base
 	                updateBase(this.baseActual);
 	            } catch (NumberFormatException ex) {
-	                // Si ocurre un error en la conversión, mostrar "ERROR"
-	                this.display.setText("ERROR");
+	                this.display.setText("Syntax ERROR");
 	            }
 	            break;
 	        case "R":
 	            this.display.setText("");
 	            this.base.setText("Base: ");
+	            this.baseActual = null;
 	            this.num1 = 0;
 	            this.num2 = 0;
 	            this.operation = '0';
@@ -508,16 +478,7 @@ public class Engine extends JFrame implements ActionListener {
 	            break;
 	        case "=":
 	            String displayText = this.display.getText().trim();
-
-	            // Validar entrada según la base antes de realizar la operación
-	            if (!isValidInput(displayText.replaceAll("[+\\-x/^√% ]", ""), this.baseActual)) {
-	                this.display.setText("Entrada inválida para la base actual");
-	                return;
-	            }
-
-	            String[] parts = displayText.split("\\s(?=[+x/-^√%])|(?<=[+x/-^√%])\\s");
-
-	            try {
+	            String[] parts = displayText.split("(?<=\\d)\\s+(?=[+x/^√%-])|(?<=[+x/^√%-])\\s+");
 	                if (parts.length == 3) { // Dos números y un operador
 	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
 	                    this.operation = parts[1].trim().charAt(0);
@@ -530,9 +491,6 @@ public class Engine extends JFrame implements ActionListener {
 	                } else {
 	                    this.display.setText("Syntax ERROR");
 	                }
-	            } catch (NumberFormatException ex) {
-	                this.display.setText("ERROR");
-	            }
 	            break;
 	        case "-":
 	            if (this.display.getText().isEmpty() || this.display.getText().endsWith(" ")) {
@@ -550,10 +508,6 @@ public class Engine extends JFrame implements ActionListener {
 	            this.display.setText(this.display.getText() + " " + op + " ");
 	            break;
 	        default:
-	            if (!isValidInput(op, this.baseActual)) {
-	                this.display.setText("Entrada inválida para la base actual");
-	                return;
-	            }
 	            this.display.setText(this.display.getText() + op);
 	            break;
 	    }
