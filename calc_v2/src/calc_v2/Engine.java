@@ -110,6 +110,7 @@ public class Engine extends JFrame implements ActionListener {
 		this.del = new JButton("⌫");
 		setSettings();
 		addActionEvent();
+		updateBase(this.baseActual);
 	}
 	
 	/**
@@ -383,40 +384,42 @@ public class Engine extends JFrame implements ActionListener {
 	public void operation() {
 	    try {
 	        // Realizar la operación en decimal
-	        int result = 0;
 	        switch (this.operation) {
 	            case '+':
-	                result = this.num1 + this.num2;
+	                this.result = this.num1 + this.num2;
 	                break;
 	            case '-':
-	                result = this.num1 - this.num2;
+	            	this.result = this.num1 - this.num2;
 	                break;
 	            case 'x':
-	                result = this.num1 * this.num2;
+	            	this.result = this.num1 * this.num2;
 	                break;
 	            case '/':
 	                if (this.num2 == 0) {
 	                    this.display.setText("División por 0 no permitida");
 	                    return;
 	                }
-	                result = this.num1 / this.num2;
+	                this.result = this.num1 / this.num2;
 	                break;
 	            case '^':
-	                result = (int) Math.pow(this.num1, this.num2);
-	                break;
-	            case '%':
-	                result = (this.num1 * this.num2) / 100;
-	                break;
+		        	this.result = num1;
+		        	for (int i = 1; i < num2; i++) {
+		        		this.result = this.result * num1;
+		        	}
+		        	break;
+		        case '√':
+		        	this.result = (int) Math.sqrt(num1);
+		        	break;
+		        case '%':
+		        	this.result = (num1 * num2) / 100;
+		        	break;
 	            default:
 	                this.display.setText("Operación no válida");
 	                return;
 	        }
 
-	        // Guardar el resultado en decimal
-	        this.result = result;
-
 	        // Convertir y mostrar el resultado en la base actual
-	        this.display.setText(convertFromDecimal(result, this.baseActual));
+	        this.display.setText(convertFromDecimal(this.result, this.baseActual));
 	    } catch (NumberFormatException ex) {
 	        this.display.setText("ERROR");
 	    }
@@ -458,18 +461,28 @@ public class Engine extends JFrame implements ActionListener {
 	        case "B8":
 	        case "B10":
 	        case "B16":
-	            if (!this.display.getText().trim().matches(".*[+\\-x/^√% ].*")) {
-	                try {
+	            try {
+	                // Si el display no está vacío y no contiene operadores
+	                if (!this.display.getText().isEmpty() && !this.display.getText().trim().matches(".*[+\\-x/^√% ].*")) {
+	                    // Convertir el número en el display de la base actual a decimal
 	                    int currentValue = convertToDecimal(this.display.getText().trim(), this.baseActual);
+
+	                    // Actualizar la base actual a la nueva
 	                    this.baseActual = Base.valueOf(op);
+
+	                    // Convertir el valor decimal a la nueva base y mostrarlo
 	                    this.display.setText(convertFromDecimal(currentValue, this.baseActual));
-	                } catch (NumberFormatException ex) {
-	                    this.display.setText("ERROR");
+	                } else {
+	                    // Si el display está vacío o contiene operadores, solo actualizar la base
+	                    this.baseActual = Base.valueOf(op);
 	                }
-	            } else {
-	                this.baseActual = Base.valueOf(op);
+
+	                // Actualizar el indicador de base
+	                updateBase(this.baseActual);
+	            } catch (NumberFormatException ex) {
+	                // Si ocurre un error en la conversión, mostrar "ERROR"
+	                this.display.setText("ERROR");
 	            }
-	            updateBase(this.baseActual);
 	            break;
 	        case "R":
 	            this.display.setText("");
