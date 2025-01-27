@@ -73,7 +73,8 @@ public class Engine extends JFrame implements ActionListener {
 		this.displayPanel = new JPanel();
 		this.buttonPanel = new JPanel();
 		this.display = new JTextField();
-		this.base = new JLabel("Base: ");
+		this.baseActual = Base.B10;
+		this.base = new JLabel("Base: Decimal");
 		this.brand = new JButton("CASIO");
 		this.b2 = new JButton("B2");
 		this.b8 = new JButton("B8");
@@ -305,19 +306,74 @@ public class Engine extends JFrame implements ActionListener {
 	    switch (_base) {
 	        case B2:
 	            this.base.setText("Base: Binaria");
+	            disableForBinary(false);
+	            enableHex(false);
 	            break;
 	        case B8:
 	        	this.base.setText("Base: Octal");
+	        	disableForBinary(true);
+	        	enableHex(false);
 	            break;
 	        case B10:
 	        	this.base.setText("Base: Decimal");
+	        	disableForBinary(true);
+	        	enableHex(false);
 	            break;
 	        case B16:
 	        	this.base.setText("Base: Hexadecimal");
-	            break;
+	        	disableForBinary(true);
+	            enableHex(true);
+	        	break;
 	    }
 	}
+	
+	/**
+	 * Metodo isValidInput().
+	 */
+	private boolean isValidInput(String input, Base base) {
+	    String regex;
+	    switch (base) {
+	        case B2:
+	            regex = "^[01]+$"; // Solo 0 y 1
+	            break;
+	        case B8:
+	            regex = "^[0-7]+$"; // Solo dígitos octales
+	            break;
+	        case B16:
+	            regex = "^[0-9A-Fa-f]+$"; // Dígitos y letras hexadecimales
+	            break;
+	        default:
+	            regex = "^[0-9]+$"; // Solo dígitos decimales
+	            break;
+	    }
+	    return input.matches(regex);
+	}
 
+	/**
+	 * Metodo disableForBinary().
+	 */
+	private void disableForBinary(boolean enabled) {
+		this.n2.setEnabled(enabled);
+		this.n3.setEnabled(enabled);
+		this.n4.setEnabled(enabled);
+		this.n5.setEnabled(enabled);
+		this.n6.setEnabled(enabled);
+		this.n7.setEnabled(enabled);
+		this.n8.setEnabled(enabled);
+		this.n9.setEnabled(enabled);
+	}
+
+	/**
+	 * Metodo enableHex().
+	 */
+	private void enableHex(boolean enabled) {
+	    this.a.setEnabled(enabled);
+	    this.b.setEnabled(enabled);
+	    this.c.setEnabled(enabled);
+	    this.d.setEnabled(enabled);
+	    this.e.setEnabled(enabled);
+	    this.f.setEnabled(enabled);
+	}
 	
 	/**
 	 * Metodo operation(). Comprueba que operacion se debe realizar. Mira el estado actual del atributo 
@@ -325,42 +381,47 @@ public class Engine extends JFrame implements ActionListener {
 	 * this.result y actualizando el texto en el display.
 	 */
 	public void operation() {
-	    switch (this.operation) {
-	        case '+':
-	            this.result = this.num1 + this.num2;
-	            break;
-	        case '-':
-	            this.result = this.num1 - this.num2;
-	            break;
-	        case 'x':
-	            this.result = this.num1 * this.num2;
-	            break;
-	        case '/':
-	            if (this.num2 != 0) {
-	                this.result = this.num1 / this.num2;
-	            } else {
-	                this.display.setText("No hagas eso :(");
+	    try {
+	        // Realizar la operación en decimal
+	        int result = 0;
+	        switch (this.operation) {
+	            case '+':
+	                result = this.num1 + this.num2;
+	                break;
+	            case '-':
+	                result = this.num1 - this.num2;
+	                break;
+	            case 'x':
+	                result = this.num1 * this.num2;
+	                break;
+	            case '/':
+	                if (this.num2 == 0) {
+	                    this.display.setText("División por 0 no permitida");
+	                    return;
+	                }
+	                result = this.num1 / this.num2;
+	                break;
+	            case '^':
+	                result = (int) Math.pow(this.num1, this.num2);
+	                break;
+	            case '%':
+	                result = (this.num1 * this.num2) / 100;
+	                break;
+	            default:
+	                this.display.setText("Operación no válida");
 	                return;
-	            }
-	            break;
-	        case '^':
-	        	this.result = num1;
-	        	for (int i = 1; i < num2; i++) {
-	        		this.result = this.result * num1;
-	        	}
-	        	break;
-	        case '√':
-	        	this.result = (int) Math.sqrt(num1);
-	        	break;
-	        case '%':
-	        	this.result = (num1 * num2) / 100;
-	        	break;
-	        default:
-	            this.result = 0;
-	    }
+	        }
 
-        this.display.setText(convertFromDecimal(this.result, baseActual));
+	        // Guardar el resultado en decimal
+	        this.result = result;
+
+	        // Convertir y mostrar el resultado en la base actual
+	        this.display.setText(convertFromDecimal(result, this.baseActual));
+	    } catch (NumberFormatException ex) {
+	        this.display.setText("ERROR");
+	    }
 	}
+
 	
 	/**
 	 * Metodo actionPerformed(). Se encarga de obtener la información que haya en el display (numeros introducidos 
@@ -370,48 +431,46 @@ public class Engine extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 	    String op = e.getActionCommand();
 	    switch (op) {
-	    	case "CASIO":
-	    		try {
-                    Desktop desktop = Desktop.getDesktop();
-                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                        desktop.browse(new URI("https://www.casio.com/es/scientific-calculators/"));
-                    }
-                } catch (IOException | URISyntaxException ex) {
-                    ex.printStackTrace();
-                }
-	    		break;
-	    	case "INFO":
-	    		new VentanaEmergente(this).setVisible(true);
-	    		break;
-	    	case "OWNER":
-	    		try {
-                    Desktop desktop = Desktop.getDesktop();
-                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                        desktop.browse(new URI("https://github.com/crisuroll"));
-                    }
-                } catch (IOException | URISyntaxException ex) {
-                    ex.printStackTrace();
-                }
-	    		break;
-	    	case "B2":
-	    		this.baseActual = Base.B2;
-                updateBase(Base.B2);
-                break;
-	    	case "B8":
-	    		this.baseActual = Base.B8;
-	    		//convertFromDecimal(this.result, baseActual);
-	    		updateBase(Base.B8);
-	    		break;
-	    	case "B10":
-	    		this.baseActual = Base.B10;
-	    		//convertFromDecimal(this.result, baseActual);
-	    		updateBase(Base.B10);
-	    		break;
-	    	case "B16":
-	    		this.baseActual = Base.B16;
-	    		//convertFromDecimal(this.result, baseActual);
-	    		updateBase(Base.B16);
-	    		break;
+	        case "CASIO":
+	            try {
+	                Desktop desktop = Desktop.getDesktop();
+	                if (desktop.isSupported(Desktop.Action.BROWSE)) {
+	                    desktop.browse(new URI("https://www.casio.com/es/scientific-calculators/"));
+	                }
+	            } catch (IOException | URISyntaxException ex) {
+	                ex.printStackTrace();
+	            }
+	            break;
+	        case "INFO":
+	            new VentanaEmergente(this).setVisible(true);
+	            break;
+	        case "OWNER":
+	            try {
+	                Desktop desktop = Desktop.getDesktop();
+	                if (desktop.isSupported(Desktop.Action.BROWSE)) {
+	                    desktop.browse(new URI("https://github.com/crisuroll"));
+	                }
+	            } catch (IOException | URISyntaxException ex) {
+	                ex.printStackTrace();
+	            }
+	            break;
+	        case "B2":
+	        case "B8":
+	        case "B10":
+	        case "B16":
+	            if (!this.display.getText().trim().matches(".*[+\\-x/^√% ].*")) {
+	                try {
+	                    int currentValue = convertToDecimal(this.display.getText().trim(), this.baseActual);
+	                    this.baseActual = Base.valueOf(op);
+	                    this.display.setText(convertFromDecimal(currentValue, this.baseActual));
+	                } catch (NumberFormatException ex) {
+	                    this.display.setText("ERROR");
+	                }
+	            } else {
+	                this.baseActual = Base.valueOf(op);
+	            }
+	            updateBase(this.baseActual);
+	            break;
 	        case "R":
 	            this.display.setText("");
 	            this.base.setText("Base: ");
@@ -423,17 +482,13 @@ public class Engine extends JFrame implements ActionListener {
 	            String currentText = this.display.getText();
 	            if (!currentText.isEmpty()) {
 	                if (currentText.endsWith(" ")) {
-	                    // Caso 1: Si termina con un espacio, eliminar los últimos tres caracteres
 	                    this.display.setText(currentText.substring(0, currentText.length() - 3));
-	                } else if (currentText.length() > 1 && currentText.charAt(currentText.length() - 2) == '-' && 
+	                } else if (currentText.length() > 1 && currentText.charAt(currentText.length() - 2) == '-' &&
 	                           !Character.isWhitespace(currentText.charAt(currentText.length() - 2))) {
-	                    // Caso 2: Si es un número negativo (como "-6"), eliminar los últimos dos caracteres
 	                    this.display.setText(currentText.substring(0, currentText.length() - 2));
 	                } else if (currentText.length() == 1 && currentText.equals("-")) {
-	                    // Caso 3: Si es el operador "-"
 	                    this.display.setText("");
 	                } else {
-	                    // Caso 4: Eliminar solo el último carácter
 	                    this.display.setText(currentText.substring(0, currentText.length() - 1));
 	                }
 	            }
@@ -441,34 +496,35 @@ public class Engine extends JFrame implements ActionListener {
 	        case "=":
 	            String displayText = this.display.getText().trim();
 
-	            // Expresion regular: \\s(?=[+x/-]) busca un espacio en blanco antes del operador.
-	            // (?<=[+x/-])\\s busca un espacio en blanco despues del operador.
-	            // El operador | (OR) separa ambas expresiones regulares.
-	            // Con esto conseguimos dividir el texto del display de la calculadora eliminando
-	            // los espacios en blanco entre operadores, y si no hay un espacio en blanco, en el caso de "-"
-	            // el numero mantiene el signo y ya no seria operador, sino indicador de que es negativo.
+	            // Validar entrada según la base antes de realizar la operación
+	            if (!isValidInput(displayText.replaceAll("[+\\-x/^√% ]", ""), this.baseActual)) {
+	                this.display.setText("Entrada inválida para la base actual");
+	                return;
+	            }
+
 	            String[] parts = displayText.split("\\s(?=[+x/-^√%])|(?<=[+x/-^√%])\\s");
-	            
-	            if (parts.length == 3) { // Dos numeros y un operador
-	                this.num1 = Integer.parseInt(parts[0].trim());
-	                this.operation = parts[1].trim().charAt(0);
-	                this.num2 = Integer.parseInt(parts[2].trim());
-	                operation();
-	            } else if (parts.length == 2) { // Un numero y un operador
-	            	this.num1 = Integer.parseInt(parts[0].trim());
-	            	this.operation = parts[1].trim().charAt(0);
-	            	operation();
-	    		} else {
-	                this.display.setText("Syntax ERROR");
+
+	            try {
+	                if (parts.length == 3) { // Dos números y un operador
+	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
+	                    this.operation = parts[1].trim().charAt(0);
+	                    this.num2 = convertToDecimal(parts[2].trim(), this.baseActual);
+	                    operation();
+	                } else if (parts.length == 2) { // Un número y un operador
+	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
+	                    this.operation = parts[1].trim().charAt(0);
+	                    operation();
+	                } else {
+	                    this.display.setText("Syntax ERROR");
+	                }
+	            } catch (NumberFormatException ex) {
+	                this.display.setText("ERROR");
 	            }
 	            break;
 	        case "-":
-	            // Si esta vacio o termina con un espacio (es decir, antes hay un operador), 
-	        	// se interpreta como numero negativo
 	            if (this.display.getText().isEmpty() || this.display.getText().endsWith(" ")) {
 	                this.display.setText(this.display.getText() + "-");
 	            } else {
-	                // Es un operador
 	                this.display.setText(this.display.getText() + " - ");
 	            }
 	            break;
@@ -478,13 +534,18 @@ public class Engine extends JFrame implements ActionListener {
 	        case "^":
 	        case "√":
 	        case "%":
-	        	this.display.setText(this.display.getText() + " " + op + " ");
+	            this.display.setText(this.display.getText() + " " + op + " ");
 	            break;
 	        default:
+	            if (!isValidInput(op, this.baseActual)) {
+	                this.display.setText("Entrada inválida para la base actual");
+	                return;
+	            }
 	            this.display.setText(this.display.getText() + op);
 	            break;
 	    }
 	}
+
 	
 	
 }
