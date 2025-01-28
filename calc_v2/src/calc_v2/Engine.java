@@ -112,8 +112,9 @@ public class Engine extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Metodo addButtonsToPanel().
-	 * @param buttons
+	 * Metodo addButtonsToPanel(). Añade todos los botones al manel de botones de manera simplificada con un
+	 * bucle for each.
+	 * @param buttons es un array de tipo JButton que contiene todos los botones.
 	 */
 	private void addButtonsToPanel(JButton[] buttons) {
 	    for (JButton button : buttons) {
@@ -218,7 +219,7 @@ public class Engine extends JFrame implements ActionListener {
 	    	_button.setPreferredSize(new Dimension(25, 30));
 	    }
 
-	 // Hover   
+	    // Hover   
 	    _button.addMouseListener(new MouseAdapter() {
 	    	
 	    	// Al pasar el cursor sobre un botón, el color se oscurece
@@ -231,11 +232,9 @@ public class Engine extends JFrame implements ActionListener {
 	    		} else if (_type == ButtonType.EXTRA) {
 	    			_button.setBackground(new Color(255, 179, 193));
 	    		} else if (_type == ButtonType.BASE) {
-	    			_button.setBackground(new Color(160, 230, 190)); // Color más oscuro para BASE
+	    			_button.setBackground(new Color(160, 230, 190));
 	    		} else if (_type == ButtonType.HEX) {
-	    			_button.setBackground(new Color(190, 160, 255)); // Color más oscuro para HEX
-	    		} else if (_type == ButtonType.BRAND) {
-	    			//_button.setBackground(new Color(250, 200, 120)); // Color más oscuro para BRAND
+	    			_button.setBackground(new Color(190, 160, 255));
 	    		}
 	    	}
 
@@ -249,15 +248,12 @@ public class Engine extends JFrame implements ActionListener {
 	    		} else if (_type == ButtonType.EXTRA) {
 	    			_button.setBackground(new Color(255, 204, 213));
 	    		} else if (_type == ButtonType.BASE) {
-	    			_button.setBackground(new Color(204, 255, 213)); // Color original para BASE
+	    			_button.setBackground(new Color(204, 255, 213));
 	    		} else if (_type == ButtonType.HEX) {
-	    			_button.setBackground(new Color(213, 204, 255)); // Color original para HEX
-	    		} else if (_type == ButtonType.BRAND) {
-	    			//_button.setBackground(new Color(255, 223, 150)); // Color original para BRAND
+	    			_button.setBackground(new Color(213, 204, 255));
 	    		}
 	    	}
 	    });
-
 	}
 	
 	/**
@@ -273,7 +269,13 @@ public class Engine extends JFrame implements ActionListener {
 		}
 	}
 	
-    private int convertToDecimal(String value, Base base) {
+	/**
+	 * Metodo convertToDecimal(). Convierte el valor del display a decimal.
+	 * @param value es el valor que muestra el display.
+	 * @param base es la base en la que se encuentra el valor.
+	 * @return retorna el valor ya convertido
+	 */
+    public int convertToDecimal(String value, Base base) {
         switch (base) {
             case B2: return Integer.parseInt(value, 2);
             case B8: return Integer.parseInt(value, 8);
@@ -283,12 +285,12 @@ public class Engine extends JFrame implements ActionListener {
     }
 
 	/**
-	 * Metodo convertFromDecimal(). Convierte el numero de base decimal a la base seleccionada.
-	 * @param value
-	 * @param base
-	 * @return
+	 * Metodo convertFromDecimal(). Convierte el valor del display de base decimal a la base seleccionada.
+	 * @param value es el valor que muestra el display.
+	 * @param base es la base a la que se va a convertir el valor.
+	 * @return retorna el valor ya convertido
 	 */
-    private String convertFromDecimal(int value, Base base) {
+    public String convertFromDecimal(int value, Base base) {
         switch (base) {
             case B2: return Integer.toBinaryString(value);
             case B8: return Integer.toOctalString(value);
@@ -298,10 +300,11 @@ public class Engine extends JFrame implements ActionListener {
     }
 	
 	/**
-	 * Metodo updateBase(). Actualiza el texto de la calculadora, indicando la base en la que se va a operar.
-	 * 
+	 * Metodo updateBase(). Actualiza el texto de la base en la que se va a operar. No se encarga de cambiar de
+	 * base. También llama a disableForBinary() y enableHex() para activar o desactivar los botones según la
+	 * base elegida.
 	 */
-	private void updateBase(Base _base) {
+	public void updateBase(Base _base) {
 	    switch (_base) {
 	        case B2:
 	            this.base.setText("Base: Binaria");
@@ -327,9 +330,10 @@ public class Engine extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Metodo disableForBinary().
+	 * Metodo disableForBinary(). Los botones se desactivan segun el caso de uso.
+	 * @param enabled indica si los botones se van a activar (True) o no (False).
 	 */
-	private void disableForBinary(boolean enabled) {
+	public void disableForBinary(boolean enabled) {
 		this.n2.setEnabled(enabled);
 		this.n3.setEnabled(enabled);
 		this.n4.setEnabled(enabled);
@@ -341,9 +345,10 @@ public class Engine extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Metodo enableHex().
+	 * Metodo enableHex(). Los botones se desactivan segun el caso de uso.
+	 * @param enabled indica si los botones se van a activar (True) o no (False).
 	 */
-	private void enableHex(boolean enabled) {
+	public void enableHex(boolean enabled) {
 	    this.a.setEnabled(enabled);
 	    this.b.setEnabled(enabled);
 	    this.c.setEnabled(enabled);
@@ -374,7 +379,7 @@ public class Engine extends JFrame implements ActionListener {
 		            if (this.num2 != 0) {
 		                this.result = this.num1 / this.num2;
 		            } else {
-		                this.display.setText("No hagas eso :(");
+		                this.display.setText("Syntax ERROR");
 		                return;
 		            }
 		            break;
@@ -400,7 +405,6 @@ public class Engine extends JFrame implements ActionListener {
 	        this.display.setText("Syntax ERROR");
 	    }
 	}
-
 	
 	/**
 	 * Metodo actionPerformed(). Se encarga de obtener la información que haya en el display (numeros introducidos 
@@ -477,24 +481,38 @@ public class Engine extends JFrame implements ActionListener {
 	            }
 	            break;
 	        case "=":
-	        	if (this.baseActual == null) {
+	            if (this.baseActual == null) {
 	                this.display.setText("ERROR: No hay base");
 	                break;
 	            }
+
 	            String displayText = this.display.getText().trim();
-	            String[] parts = displayText.split("(?<=\\d)\\s+(?=[+x/^√%-])|(?<=[+x/^√%-])\\s+");
+
+	            // Patrón ajustado para soportar números hexadecimales y operadores
+	            String[] parts = displayText.split("(?<=\\p{XDigit})\\s+(?=[+x/^√%-])|(?<=[+x/^√%-])\\s+");
+
+	            try {
 	                if (parts.length == 3) { // Dos números y un operador
+	                    // Convertir los números a decimal desde la base actual
 	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
 	                    this.operation = parts[1].trim().charAt(0);
 	                    this.num2 = convertToDecimal(parts[2].trim(), this.baseActual);
+
+	                    // Realizar la operación
 	                    operation();
 	                } else if (parts.length == 2) { // Un número y un operador
+	                    // Convertir el número a decimal desde la base actual
 	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
 	                    this.operation = parts[1].trim().charAt(0);
+
+	                    // Realizar la operación
 	                    operation();
 	                } else {
 	                    this.display.setText("Syntax ERROR");
 	                }
+	            } catch (NumberFormatException ex) {
+	                this.display.setText("Syntax ERROR");
+	            }
 	            break;
 	        case "-":
 	            if (this.display.getText().isEmpty() || this.display.getText().endsWith(" ")) {
@@ -516,8 +534,5 @@ public class Engine extends JFrame implements ActionListener {
 	            break;
 	    }
 	}
-
-	
-	
 }
 

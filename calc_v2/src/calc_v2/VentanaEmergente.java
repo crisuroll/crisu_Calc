@@ -15,6 +15,10 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+/**
+ * Clase VentanaEmergente. Encargada de crear una ventana emergente para el botón INFO.
+ * @author crisuroll
+ */
 public class VentanaEmergente extends JDialog {
 	public VentanaEmergente(JFrame parent) {
 		super(parent, "Ventana de información", true);
@@ -54,7 +58,5 @@ public class VentanaEmergente extends JDialog {
         add(closeButton2);
 
         setLocationRelativeTo(parent);
-		
-		
 	}
 }

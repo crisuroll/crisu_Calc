@@ -14,8 +14,11 @@ Welcome to a basic calculator made with Java, using the Swing library!
 - **Other operations**: Added pow, square root and percentages
 - **What is that star...?**: Easter egg button. Nothing dangerous tho :)
 
-### v2 (in progress...)
-...
+### v2
+- **New button ⌫**: Instead of deleting the whole display as R button does, this new button deletes character by character
+- **Added bases**: You can operate in binary, octal, decimal and hex
+- **Replaced star button**: OWNER button does the same function, redirects to my GitHub profile
+- **More extra buttons!**: INFO button pops up a new window; CASIO button redirects to their calculator shop
 
 ## 🗂️ Some testing!
 
@@ -44,7 +47,7 @@ Welcome to a basic calculator made with Java, using the Swing library!
 
 
 
-### 3.  Easter egg
+### 3.  Easter egg (only v1)
 I'll explain what is the star function in case no one trust it! I'll hide it in case you want to discover it by yourself...
 
 <details>
@@ -52,6 +55,14 @@ I'll explain what is the star function in case no one trust it! I'll hide it in 
   The pink button with a white start just redirects to my GitHub profile when clicked.
   
 </details>
+
+### 4.	Operations with different bases**
+You can operate in binary, octal, decimal and hex. Also, the display value converts to the base selected. 
+
+![bases](https://github.com/crisuroll/crisu_Calc/blob/main/README%20src/bases.gif)
+
+
+You can't convert in the middle of an operation tho. Also, you have to select a base before start operating.
 
 
 ## 🛠️ Technologies Used
