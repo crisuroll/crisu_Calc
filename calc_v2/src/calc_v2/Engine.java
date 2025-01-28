@@ -397,7 +397,7 @@ public class Engine extends JFrame implements ActionListener {
 	        // Convertir y mostrar el resultado en la base actual
 	        this.display.setText(convertFromDecimal(this.result, this.baseActual));
 	    } catch (NumberFormatException ex) {
-	        this.display.setText("ERROR");
+	        this.display.setText("Syntax ERROR");
 	    }
 	}
 
@@ -477,6 +477,10 @@ public class Engine extends JFrame implements ActionListener {
 	            }
 	            break;
 	        case "=":
+	        	if (this.baseActual == null) {
+	                this.display.setText("ERROR: No hay base");
+	                break;
+	            }
 	            String displayText = this.display.getText().trim();
 	            String[] parts = displayText.split("(?<=\\d)\\s+(?=[+x/^√%-])|(?<=[+x/^√%-])\\s+");
 	                if (parts.length == 3) { // Dos números y un operador
