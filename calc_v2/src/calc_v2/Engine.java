@@ -309,21 +309,25 @@ public class Engine extends JFrame implements ActionListener {
 	        case B2:
 	            this.base.setText("Base: Binaria");
 	            disableForBinary(false);
+	            disableForOctal(true);
 	            enableHex(false);
 	            break;
 	        case B8:
 	        	this.base.setText("Base: Octal");
 	        	disableForBinary(true);
+	        	disableForOctal(false);
 	        	enableHex(false);
 	            break;
 	        case B10:
 	        	this.base.setText("Base: Decimal");
 	        	disableForBinary(true);
+	        	disableForOctal(true);
 	        	enableHex(false);
 	            break;
 	        case B16:
 	        	this.base.setText("Base: Hexadecimal");
 	        	disableForBinary(true);
+	        	disableForOctal(true);
 	            enableHex(true);
 	        	break;
 	    }
@@ -340,6 +344,15 @@ public class Engine extends JFrame implements ActionListener {
 		this.n5.setEnabled(enabled);
 		this.n6.setEnabled(enabled);
 		this.n7.setEnabled(enabled);
+		this.n8.setEnabled(enabled);
+		this.n9.setEnabled(enabled);
+	}
+	
+	/**
+	 * Metodo disableForOctal(). Los botones se desactivan segun el caso de uso.
+	 * @param enabled indica si los botones se van a activar (True) o no (False).
+	 */
+	public void disableForOctal(boolean enabled) {
 		this.n8.setEnabled(enabled);
 		this.n9.setEnabled(enabled);
 	}
@@ -449,7 +462,6 @@ public class Engine extends JFrame implements ActionListener {
 	                    this.baseActual = Base.valueOf(op);
 	                    this.display.setText(convertFromDecimal(currentValue, this.baseActual));
 	                } else {
-	                    // Si el display está vacío o contiene operadores, solo actualizar la base
 	                    this.baseActual = Base.valueOf(op);
 	                }
 	                updateBase(this.baseActual);
@@ -485,10 +497,7 @@ public class Engine extends JFrame implements ActionListener {
 	                this.display.setText("ERROR: No hay base");
 	                break;
 	            }
-
 	            String displayText = this.display.getText().trim();
-
-	            // Patrón ajustado para soportar números hexadecimales y operadores
 	            String[] parts = displayText.split("(?<=\\p{XDigit})\\s+(?=[+x/^√%-])|(?<=[+x/^√%-])\\s+");
 
 	            try {
@@ -497,15 +506,10 @@ public class Engine extends JFrame implements ActionListener {
 	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
 	                    this.operation = parts[1].trim().charAt(0);
 	                    this.num2 = convertToDecimal(parts[2].trim(), this.baseActual);
-
-	                    // Realizar la operación
 	                    operation();
 	                } else if (parts.length == 2) { // Un número y un operador
-	                    // Convertir el número a decimal desde la base actual
 	                    this.num1 = convertToDecimal(parts[0].trim(), this.baseActual);
 	                    this.operation = parts[1].trim().charAt(0);
-
-	                    // Realizar la operación
 	                    operation();
 	                } else {
 	                    this.display.setText("Syntax ERROR");
