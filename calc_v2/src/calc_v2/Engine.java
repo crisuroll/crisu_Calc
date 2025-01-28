@@ -309,7 +309,7 @@ public class Engine extends JFrame implements ActionListener {
 	        case B2:
 	            this.base.setText("Base: Binaria");
 	            disableForBinary(false);
-	            disableForOctal(true);
+	            disableForOctal(false);
 	            enableHex(false);
 	            break;
 	        case B8:
